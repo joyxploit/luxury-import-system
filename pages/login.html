@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | LUXURY IMPORT</title>
+
+  <link rel="stylesheet" href="../style/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="login-container">
+
+    <h2>Welcome Back</h2>
+    <p class="tagline">Sign in to continue</p>
+
+    <form class="login-form" id="loginForm">
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+
+      <button type="submit">Sign In</button>
+
+      <p class="link">
+        Don't have an account? <a href="signup.html">Sign up</a>
+      </p>
+
+    </form>
+  </div>
+  
+<!-- ✅ FIXED: auth.js must load FIRST -->
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/api.js"></script>
+<script src="../scripts/login.js"></script>
+
+</body>
+</html>

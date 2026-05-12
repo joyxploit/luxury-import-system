@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Import | Premium Goods from China to Kenya</title>
+  <link rel="stylesheet" href="../style/index.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+    
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">LUXURY IMPORT</a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#trending">Trending</a></li>
+        <li><a href="categories.html">Categories</a></li>
+        <li><a href="orders.html">orders</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+  
+        <a href="cart.html" class="cart-icon">🛒 <span id="cart-count">0</span></a>
+        <a href="login.html" class="btn-login">Login</a>
+        <a href="signup.html" class="btn-signup">Sign Up</a>
+        
+
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Hot & Top Trends</h1>
+      <p class="hero-subtitle">Discover the most sought-after global pieces — trending now and available for exclusive preorder.</p>
+    </div>
+  </section>
+
+  <!-- Weekly Top Trends -->
+  <section class="trends-section" id="trending">
+    <div class="container">
+      <h2 class="section-title">Weekly Top Trends</h2>
+      <p class="section-subtitle">Stay ahead of the curve with this week's most in-demand imports, handpicked just for you.</p>
+
+      <div class="products-grid">
+
+        <!-- Product Card 1 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/bags/b1.jpg" alt="Designer Bag">
+            <div class="product-badge">New</div>
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Designer Leather Bag</h3>
+            <p class="product-price">KSh 2,450.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(1, 'Designer Leather Bag', 2450, '../assets/bags/b1.jpg')">Add to Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 2 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/accessory/WATCH 3.jpg" alt="Luxury Watch">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Premium Watch Collection</h3>
+            <p class="product-price">KSh 1,650.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(2, 'Premium Watch Collection', 1650, '../assets/accessory/WATCH 3.jpg')">Add
+              to Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 3 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/accessory/G1.jpg" alt="Designer Sunglasses">
+            <div class="product-badge">Hot</div>
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Designer Sunglasses</h3>
+            <p class="product-price">KSh 950.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(3, 'Designer Sunglasses', 950, '../assets/accessory/G1.jpg')">Add to
+              Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 4 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/perfumes/SET 1.jpg" alt="Perfume Set">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Luxury Perfume Set</h3>
+            <p class="product-price">KSh 4,000.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(4, 'Luxury Perfume Set', 4000, '../assets/perfumes/SET 1.jpg')">Add to
+              Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 5 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/charms/CHARM 1.jpg" alt="CHARM">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Gold Jewelry bag charm</h3>
+            <p class="product-price">KSh 250.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(5, 'Gold Jewelry bag charm', 250, '../assets/charms/CHARM 1.jpg')">Add to
+              Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 6 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/shoes/s1.jpg" alt="Designer Shoes">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Quality heels</h3>
+            <p class="product-price">KSh 1,700.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(6, 'Quality heels', 1700, '../assets/shoes/s1.jpg')">Add to Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 7 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/bags/b2.jpg" alt="Handbag">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Classic Handbag</h3>
+            <p class="product-price">KSh 2,100.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(7, 'Classic Handbag', 2100, '../assets/bags/b2.jpg')">Add to Cart</button>
+          </div>
+        </div>
+
+        <!-- Product Card 8 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../assets/perfumes/p1.jpg" alt="PERFUMES">
+          </div>
+          <div class="product-info">
+            <div class="product-rating"> ⭐⭐⭐⭐⭐ <span>(5)</span> </div>
+            <h3 class="product-name">Designer perfume</h3>
+            <p class="product-price">KSh 2,600.00</p>
+            <button class="btn-add-cart"
+              onclick="addToCartFromHome(8, 'Designer perfume', 2600, '../assets/perfumes/p1.jpg')">Add to
+              Cart</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop by Category -->
+  <section class="categories-section" id="categories">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-subtitle">Browse our curated collections by season, style, or mood — your next luxury find is just a click away.</p>
+
+      <div class="categories-grid">
+
+        <!-- Bags -->
+        <div class="category-card">
+          <img src="../assets/bags/b1.jpg" alt="Bags">
+          <div class="category-overlay">
+            <h3>Designer Bags</h3>
+            <a href="categories.html?category=bags" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Perfumes -->
+        <div class="category-card">
+          <img src="../assets/perfumes/p1.jpg" alt="Perfumes">
+          <div class="category-overlay">
+            <h3>Luxury Perfumes</h3>
+            <a href="categories.html?category=perfumes" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Watches -->
+        <div class="category-card">
+          <img src="../assets/accessory/WATCH 3.jpg" alt="Watches">
+          <div class="category-overlay">
+            <h3>Premium Watches</h3>
+            <a href="categories.html?category=watches" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Charms -->
+        <div class="category-card">
+          <img src="../assets/charms/CHARM 1.jpg" alt="Accessories">
+          <div class="category-overlay">
+            <h3>Bag charms</h3>
+            <a href="categories.html?category=charms" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Sunglasses -->
+        <div class="category-card">
+          <img src="../assets/accessory/G2.jpg" alt="sunglasses">
+          <div class="category-overlay">
+            <h3>Sunglasses</h3>
+            <a href="categories.html?category=sunglasses" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Shoes -->
+        <div class="category-card">
+          <img src="../assets/shoes/s10.jpg" alt="shoes">
+          <div class="category-overlay">
+            <h3>Shoes</h3>
+            <a href="categories.html?category=shoes" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Fashion Apparel -->
+        <div class="category-card">
+          <img src="../assets/fashion apparel/C6.jpg" alt="fashion apparel">
+          <div class="category-overlay">
+            <h3>Fashion Apparel</h3>
+            <a href="categories.html?category=fashion-apparel" class="btn-category">Shop Now</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="container">
+      <h2 class="section-title">The feeling of unwrapping your orders from us!</h2>
+
+      <div class="testimonials-grid">
+
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"Luxury Import exceeded my expectations. My preorder arrived beautifully packaged, on time, and exactly as described. The team kept me updated every step of the way. Shopping luxury has never felt this easy or this personal."</p>
+          <p class="testimonial-author">— Sarah M.</p>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"I've joined three preorders now and each one has been flawless. The items are authentic, the process is smooth, and the customer service is amazing. I love knowing I can trust Luxury Import with my favorite international finds."</p>
+          <p class="testimonial-author">— James K.</p>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"Everything from the updates to the unboxing is top-tier. I've ordered bags and accessories and always get exactly what I expect — sometimes even better. This is the luxury shopping experience I didn't know I needed."</p>
+          <p class="testimonial-author">— Grace W.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section" id="about">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 class="stat-number">2,700+</h3>
+          <p class="stat-label">Happy Members</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-number">500+</h3>
+          <p class="stat-label">Products</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-number">98%</h3>
+          <p class="stat-label">Satisfaction Rate</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-number">24/7</h3>
+          <p class="stat-label">Support</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div class="footer-col">
+          <h3 class="footer-title">LUXURY IMPORT</h3>
+          <p>Your trusted partner for premium imports from China to Kenya.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#trending">Trending</a></li>
+            <li><a href="products.html">Categories</a></li>
+            <li><a href="login.html">Track Order</a></li>
+            <li><a href="signup.html">Join Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <p>Email: info@luxuryimport.co.ke</p>
+          <p>Phone: +254 707357001</p>
+          <p>Nairobi, Kenya</p>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 Luxury Import. All rights reserved. | Developed by Joy Njeri Kihara</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="scripts/cart.js"></script>
+  <script>
+    function addToCartFromHome(id, name, price, image) {
+      const product = { id, name, price, image };
+      addToCart(product);
+    }
+  </script>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/cart.js"></script>
+  <script src="../scripts/index.js"></script>
+  <script src="../scripts/auth.js"></script>
+   
+
+</body>
+
+</html>

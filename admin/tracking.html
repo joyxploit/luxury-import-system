@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Your Order</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><h1>Order Tracking</h1></header>
+  <section>
+    <input type="text" id="orderId" placeholder="Enter your Order ID">
+    <button onclick="trackOrder()">Track</button>
+    <div id="status"></div>
+  </section>
+
+  <script>
+    function trackOrder() {
+      const id = document.getElementById('orderId').value;
+      const statusBox = document.getElementById('status');
+      const dummyStatus = {
+        'ORD001': 'Processing in China',
+        'ORD002': 'Shipped',
+        'ORD003': 'Arrived in Kenya',
+        'ORD004': 'Out for delivery',
+        'ORD005': 'Delivered'
+      };
+      statusBox.textContent = dummyStatus[id] || 'Invalid Order ID';
+    }
+  </script>
+</body>
+</html>

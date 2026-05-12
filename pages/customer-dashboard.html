@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop | Luxury Import</title>
+  <link rel="stylesheet" href="../style/customer.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <div class="header-top">
+        <a href="index.html" style="text-decoration: none;">
+            <h1 class="logo">LUXURY IMPORT</h1>
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="categories.html" class="nav-link">Categories</a>
+            <a href="#" class="nav-link active">Shop</a>
+        </nav>
+        
+        <div class="header-actions">
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Search products..." 
+              class="search-input"
+            >
+            <span class="search-icon">🔍</span>
+          </div>
+          
+          <button class="icon-btn" id="wishlist-btn">
+            <span class="icon">💖</span>
+            <span class="badge" id="wishlist-badge">0</span>
+          </button>
+          
+         <button class="icon-btn" id="cart-btn" onclick="window.location.href='cart.html'">
+         <span class="icon">🛒</span>
+         <span class="badge" id="cart-badge">0</span>
+         </button>
+         <button class="icon-btn" id="logoutBtn" title="Logout">
+         <span class="icon">🚪</span>
+         </button>
+          
+          <button class="menu-btn" id="mobile-menu-btn">
+            <san class="menu-icon">☰</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-search">
+        <input 
+          type="text" 
+          id="mobile-search-input" 
+          placeholder="Search products..." 
+          class="search-input"
+        >
+        <span class="search-icon">🔍</span>
+      </div>
+    </divp>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <section class="categories-section">
+        <div class="categories-header">
+          <h2>Categories</h2>
+          <select id="sort-select" class="sort-select">
+            <option value="default">Sort: Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name: A to Z</option>
+          </select>
+        </div>
+        
+        <div class="categories-grid" id="categories-grid">
+          <button class="category-btn active" data-category="all">
+            <span class="category-emoji">🛍️</span>
+            <span class="category-name">All Products</span>
+          </button>
+          <button class="category-btn" data-category="bags">
+            <span class="category-emoji">👜</span>
+            <span class="category-name">Designer Bags</span>
+          </button>
+          <button class="category-btn" data-category="perfumes">
+            <span class="category-emoji">🌺</span>
+            <span class="category-name">Luxury Perfumes</span>
+          </button>
+          <button class="category-btn" data-category="watches">
+            <span class="category-emoji">⌚</span>
+            <span class="category-name">Premium Watches</span>
+          </button>
+          <button class="category-btn" data-category="shoes">
+            <span class="category-emoji">👞</span>
+            <span class="category-name">Designer Shoes</span>
+          </button>
+          <button class="category-btn" data-category="sunglasses">
+            <span class="category-emoji">🕶️</span>
+            <span class="category-name">Sunglasses</span>
+          </button>
+          <button class="category-btn" data-category="jewelry">
+            <span class="category-emoji">💎</span>
+            <span class="category-name">Jewelry</span>
+          </button>
+          <button class="category-btn" data-category="apparel">
+            <span class="category-emoji">🧥</span>
+            <span class="category-name">Fashion Apparel</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="products-header">
+        <h2 id="category-title">All Products</h2>
+        <p id="products-count">Showing 0 products</p>
+      </div>
+
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
+      </div>
+
+      <div id="no-products" class="no-products" style="display: none;">
+        <p>No products found</p>
+        <span>Try a different category or search term</span>
+      </div>
+
+      <div id="products-grid" class="products-grid"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>LUXURY IMPORT</h3>
+          <p>Your trusted partner for premium imports from China to Kenya.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Trending</a></li>
+            <li><a href="#">Categories</a></li>
+            <li><a href="#">Track Order</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <p>Email: info@luxuryimport.co.ke</p>
+          <p>Phone: +254 707357001</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Luxury Import. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/cart.js"></script>
+  <script src="../scripts/customer.js"></script>
+  <script src="../scripts/logout.js"></script>
+  <script src="../scripts/auth.js"></script>
+
+</body>
+</html>
