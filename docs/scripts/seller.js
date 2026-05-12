@@ -69,7 +69,7 @@ if (sellerForm) {
         const productData = { name, price, category, description, image: imageBase64 };
 
         try {
-            const response = await fetch('http://localhost:5000/api/products', {
+            const response = await fetch('https://luxury-backend-qtck.onrender.com/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(productData)
@@ -113,7 +113,7 @@ async function loadSellerProducts() {
 
     try {
         // Fetch from Backend
-        const response = await fetch ('http://localhost:5000/api/products');
+        const response = await fetch ('https://luxury-backend-qtck.onrender.com/api/products');
         const data = await response.json();
 
         if (data.success && data.products) {
@@ -159,7 +159,7 @@ async function loadSellerProducts() {
 
 window.deleteProduct = async function(id) {
     if(confirm("Delete?")) {
-        await fetch(`http://localhost:5000/api/products/${id}`, { method: 'DELETE' });
+        await fetch(`https://luxury-backend-qtck.onrender.com/api/products/${id}`, { method: 'DELETE' });
         loadSellerProducts();
     }
 }

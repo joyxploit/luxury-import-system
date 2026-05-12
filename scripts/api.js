@@ -1,5 +1,5 @@
 // API Service for Luxury Import System
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://luxury-backend-qtck.onrender.com/api';
 
 // Helper function to get token
 function getToken() {

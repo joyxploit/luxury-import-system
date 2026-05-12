@@ -68,7 +68,7 @@ async function loadOrders(userId) {
         console.log('Fetching orders for user ID:', userId);
         
         // Fetch orders for THIS USER ONLY
-        const response = await fetch(`http://localhost:5000/api/orders?userId=${userId}`);
+        const response = await fetch(`https://luxury-backend-qtck.onrender.com/api/orders?userId=${userId}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
