@@ -1,5 +1,5 @@
 // scripts/auth.js - FRONTEND AUTHENTICATION HELPER
-// Include this in EVERY HTML page: <script src="../scripts/auth.js"></script>
+// Include this in EVERY HTML page: <script src="scripts/auth.js"></script>
 
 const AuthSystem = {
   // Save user data after login/registration
