@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | LUXURY IMPORT</title>
+  <link rel="stylesheet" href="../style/signup.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="header-section">
+        <h1>LUXURY IMPORT</h1>
+        <h2>Create Your Account</h2>
+        <p class="tagline">Join the luxury experience</p>
+      </div>
+      
+      <form class="signup-form" id="signupForm">
+        <div class="form-group">
+          <label for="role">Register as</label>
+          <select id="role" name="role" required>
+            <option value="">Select your role</option>
+            <option value="customer">Customer</option>
+            <option value="seller">Seller</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="0712345678" required />
+          </div>
+
+          <div class="form-group">
+            <label for="county">County</label>
+            <input type="text" id="county" name="county" placeholder="Nairobi" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="town">Town</label>
+            <input type="text" id="town" name="town" placeholder="Westlands" required />
+          </div>
+
+          <div class="form-group">
+            <label for="estate">Estate (Optional)</label>
+            <input type="text" id="estate" name="estate" placeholder="Parklands" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Min. 6 characters" required />
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Repeat password" required />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Create Account</button>
+        
+        <div class="divider">
+          <span>or</span>
+        </div>
+
+        <p class="link">Already have an account? <a href="login.html">Sign in</a></p>
+        
+      </form>
+
+      <div id="successMessage" class="success-message" style="display: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Your account has been created successfully!</span>
+      </div>
+    </div>
+  </div>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/signup.js"></script>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>

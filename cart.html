@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Shopping Cart - Luxury Import</title>
+  <link rel="stylesheet" href="../style/cart.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Dashboard / Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">LUXURY IMPORT</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="categories.html">Categories</a></li>
+        <li><a href="cart.html" class="active">Cart</a></li>
+        <li><a href="checkout.html">Checkout</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="wishlist.html">Wishlist</a>
+      
+        <a href="cart.html" class="cart-icon">
+          🛒 Cart <span id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <h1>Your Shopping Cart</h1>
+    
+    <div class="cart-wrapper">
+      <div id="cart-items-container">
+        <p id="empty-cart-message">Your cart is currently empty.</p>
+      </div>
+
+      <!-- Cart Summary -->
+      <div id="cart-summary" class="hidden">
+        <div class="summary-row">
+          <span>Total:</span>
+          <span id="cart-total">Ksh 0.00</span>
+        </div>
+        <button id="checkout-btn">Proceed to Checkout</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Message -->
+  <div id="toast-message" class="hidden"></div>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/cart.js"></script>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>
