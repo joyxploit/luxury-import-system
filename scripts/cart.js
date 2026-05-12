@@ -65,7 +65,7 @@ window.addToCart = function(product, variant = '') {
         safeImage = product.image;
     } else {
         // If it's a massive Base64 string, use a local placeholder to save memory
-        // safeImage = '../assets/images/product-placeholder.jpg'; 
+        // safeImage = 'assets//images/product-placeholder.jpg'; 
         safeImage = 'https://placehold.co/150?text=Item';
     }
 

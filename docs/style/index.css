@@ -153,7 +153,7 @@ body {
 /* Hero Section */
 .hero {
   background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-              url('../assets/LUXURY\ LOGO.jpg') center/cover no-repeat;
+              url('assets//LUXURY\ LOGO.jpg') center/cover no-repeat;
   min-height: 800px;
   display: flex;
   align-items: center;
