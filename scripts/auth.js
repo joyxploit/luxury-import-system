@@ -115,7 +115,7 @@ const AuthSystem = {
         if (confirm('Are you sure you want to logout?')) {
           this.logout();
           alert('✅ Logged out successfully!');
-          window.location.href = '../pages/login.html';
+          window.location.href = '/login.html';
         }
       });
     });
