@@ -322,6 +322,9 @@
             document.getElementById('avatarName').textContent = updatedUser.name;
 
             successMsg.style.display = 'block';
+setTimeout(() => {
+  window.location.href = 'index.html';
+}, 2000); // waits 2 seconds so user sees the success message
           } else {
             errorMsg.textContent = data.message || 'Failed to update profile.';
             errorMsg.style.display = 'block';
