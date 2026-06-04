@@ -2,6 +2,18 @@
 
 const loginForm = document.getElementById('loginForm');
 
+document.addEventListener('DOMContentLoaded', () => {
+  const existingUser = localStorage.getItem('currentUser') || 
+                       localStorage.getItem('isLoggedIn');
+  
+  if (existingUser) {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const name = user?.name || 'Someone';
+    alert(`${name} is currently logged in. Please logout first before switching accounts.`);
+    window.location.href = 'index.html'; // redirect away from login page
+  }
+});
+
 loginForm.addEventListener('submit', async function(e) {
   e.preventDefault();
   
