@@ -39,14 +39,14 @@ loginForm.addEventListener('submit', async function(e) {
       
       // Redirect based on role
       if (response.user.role === 'customer') {
-        window.location.href = 'customer-dashboard.html';
+        window.location.href = 'index.html';
       } else if (response.user.role === 'seller') {
         window.location.href = 'seller-dashboard.html';
       } else if (response.user.role === 'admin') {
         window.location.href = 'seller-dashboard.html';
       } else {
         alert('Unknown role: ' + response.user.role);
-        window.location.href = 'customer-dashboard.html';
+        window.location.href = 'index.html';
       }
     } else {
       alert('Login failed: ' + (response.message || 'Unknown error'));
