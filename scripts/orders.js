@@ -1,16 +1,13 @@
 // scripts/orders.js - WITH USER AUTHENTICATION
 
-// Wait for DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Orders page loaded');
     checkAuthAndLoadOrders();
 });
 
 function checkAuthAndLoadOrders() {
-    // Try multiple possible localStorage keys
     let currentUser = null;
     
-    // Check different possible keys
     const possibleKeys = ['currentUser', 'user', 'loggedInUser', 'authUser'];
     
     for (const key of possibleKeys) {
@@ -20,7 +17,6 @@ function checkAuthAndLoadOrders() {
                 const parsed = JSON.parse(data);
                 if (parsed && (parsed.id || parsed.userId || parsed.user_id)) {
                     currentUser = parsed;
-                    console.log('Found user in localStorage key:', key, parsed);
                     break;
                 }
             }
@@ -29,32 +25,24 @@ function checkAuthAndLoadOrders() {
         }
     }
     
-    // If still no user found, check if there's any user data at all
     if (!currentUser) {
-        console.log('All localStorage keys:', Object.keys(localStorage));
-        console.log('No logged-in user found - redirecting to login');
         alert('Please login to view your orders');
         window.location.href = 'login.html';
         return;
     }
     
-    // Get user ID (might be stored as id, userId, or user_id)
-    const userId = currentUser.id || currentUser.userId || currentUser.user_id || 1;
     const userName = currentUser.name || currentUser.username || currentUser.email || 'User';
     
-    console.log('Logged in user:', userName, '(ID:', userId + ')');
-    
-    // Update greeting in navbar
     const userGreeting = document.getElementById('userGreeting');
     if (userGreeting) {
         userGreeting.textContent = `Welcome, ${userName}`;
     }
     
-    // Load orders for this specific user
-    loadOrders(userId);
+    // ✅ No longer passing userId — token handles it
+    loadOrders();
 }
 
-async function loadOrders(userId) {
+async function loadOrders() {
     const ordersContainer = document.getElementById('orders-container');
     
     if (!ordersContainer) {
@@ -65,10 +53,14 @@ async function loadOrders(userId) {
     ordersContainer.innerHTML = '<p style="text-align:center; padding:20px;">Loading your order history...</p>';
 
     try {
-        console.log('Fetching orders for user ID:', userId);
-        
-        // Fetch orders for THIS USER ONLY
-        const response = await fetch(`https://luxury-backend-qtck.onrender.com/api/orders?userId=${userId}`);
+        // ✅ Send token instead of userId
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+
+        const response = await fetch(`https://luxury-backend-qtck.onrender.com/api/orders`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -95,8 +87,7 @@ async function loadOrders(userId) {
         console.error("Error loading orders:", error);
         ordersContainer.innerHTML = `
             <p style="color:red; text-align:center;">
-                Error: ${error.message}<br>
-                <small>Make sure backend is running on port 5000</small>
+                Error: ${error.message}
             </p>`;
     }
 }
@@ -116,18 +107,15 @@ function renderOrders(orders, container) {
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         `;
 
-        // Use created_at from API
         const orderDate = new Date(order.created_at);
         const dateString = orderDate.toLocaleDateString();
 
-        // Calculate delivery estimate (4-8 weeks)
         const minDate = new Date(orderDate);
         minDate.setDate(minDate.getDate() + 28);
         const maxDate = new Date(orderDate);
         maxDate.setDate(maxDate.getDate() + 56);
         const deliveryString = `${minDate.toDateString()} - ${maxDate.toDateString()}`;
 
-        // Parse items safely
         let orderItems = [];
         try {
             if (typeof order.items === 'string') {
@@ -139,10 +127,8 @@ function renderOrders(orders, container) {
             console.error('Error parsing items:', e);
         }
 
-        // Generate items HTML
         const itemsHTML = orderItems.map(item => {
             let imgSrc = item.image || 'https://placehold.co/60x60';
-
             return `
                 <div class="order-item" style="display:flex; gap:10px; margin-bottom:10px; padding:10px; background:#f9f9f9; border-radius:4px;">
                     <img src="${imgSrc}" alt="${item.name}" 
@@ -159,7 +145,6 @@ function renderOrders(orders, container) {
             `;
         }).join('');
 
-        // Progress bar
         const stages = ['pending', 'shipped', 'delivered'];
         const currentStageIndex = stages.indexOf(order.status.toLowerCase());
         const activeIndex = currentStageIndex >= 0 ? currentStageIndex : 0;
@@ -172,7 +157,6 @@ function renderOrders(orders, container) {
             return `<div class="progress-step" style="${style} width:25px; height:25px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:12px; border:2px solid;">${index+1}</div>`;
         }).join('<div style="flex:1; height:2px; background:#ddd; margin:0 5px;"></div>');
 
-        // Handle both field name formats
         const orderNum = order.orderNumber || order.order_number;
         const totalAmt = order.totalAmount || order.total_amount;
 
