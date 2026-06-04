@@ -70,7 +70,7 @@ form.addEventListener('submit', async function (e) {
         if (response.user.role === 'seller') {
           window.location.href = 'seller-dashboard.html';
         } else if (response.user.role === 'customer') {
-          window.location.href = 'customer-dashboard.html';
+          window.location.href = 'index.html';
         } else {
           window.location.href = 'index.html';
         }
