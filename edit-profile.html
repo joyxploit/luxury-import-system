@@ -225,22 +225,10 @@
               <input type="text" id="editTown" placeholder="e.g. Westlands">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Estate</label>
-              <input type="text" id="editEstate" placeholder="e.g. Lavington">
-            </div>
-            
-          </div>
 
-          <p class="section-label">Change Password</p>
           <div class="form-group">
-            <label>New Password <span style="color:#bbb; font-weight:400;">(leave blank to keep current)</span></label>
-            <input type="password" id="editPassword" placeholder="Enter new password">
-          </div>
-          <div class="form-group">
-            <label>Confirm New Password</label>
-            <input type="password" id="editConfirmPassword" placeholder="Confirm new password">
+            <label>Estate</label>
+            <input type="text" id="editEstate" placeholder="e.g. Lavington">
           </div>
 
           <div class="success-msg" id="successMsg">✅ Profile updated successfully!</div>
@@ -293,25 +281,15 @@
       document.getElementById('editCounty').value = fullUser.county || '';
       document.getElementById('editTown').value = fullUser.town || '';
       document.getElementById('editEstate').value = fullUser.estate || '';
-      document.getElementById('editBuilding').value = fullUser.building || '';
 
       // Form submit
       document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const password = document.getElementById('editPassword').value;
-        const confirmPassword = document.getElementById('editConfirmPassword').value;
         const errorMsg = document.getElementById('errorMsg');
         const successMsg = document.getElementById('successMsg');
-
         errorMsg.style.display = 'none';
         successMsg.style.display = 'none';
-
-        if (password && password !== confirmPassword) {
-          errorMsg.textContent = 'Passwords do not match.';
-          errorMsg.style.display = 'block';
-          return;
-        }
 
         const payload = {
           name: document.getElementById('editName').value,
@@ -319,9 +297,7 @@
           county: document.getElementById('editCounty').value,
           town: document.getElementById('editTown').value,
           estate: document.getElementById('editEstate').value,
-          building: document.getElementById('editBuilding').value,
         };
-        if (password) payload.password = password;
 
         try {
           const token = localStorage.getItem('token') || localStorage.getItem('authToken');
@@ -346,8 +322,6 @@
             document.getElementById('avatarName').textContent = updatedUser.name;
 
             successMsg.style.display = 'block';
-            document.getElementById('editPassword').value = '';
-            document.getElementById('editConfirmPassword').value = '';
           } else {
             errorMsg.textContent = data.message || 'Failed to update profile.';
             errorMsg.style.display = 'block';
