@@ -48,6 +48,8 @@ const AuthSystem = {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userRole');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser'); 
+    localStorage.removeItem('token'); 
     console.log('✅ User logged out');
   },
 
@@ -113,7 +115,7 @@ const AuthSystem = {
         if (confirm('Are you sure you want to logout?')) {
           this.logout();
           alert('✅ Logged out successfully!');
-          window.location.href = '../pages/index.html';
+          window.location.href = '../pages/login.html';
         }
       });
     });
@@ -134,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('👤 No user logged in');
   }
 });
+
 
 // Make available globally
 window.AuthSystem = AuthSystem;
