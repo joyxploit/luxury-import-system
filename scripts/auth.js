@@ -78,32 +78,29 @@ const AuthSystem = {
   },
 
   // Update UI elements on all pages
-  updatePageUI() {
-    const user = this.getCurrentUser();
-    
-    // Find and update user greeting elements
-    const userGreeting = document.getElementById('userGreeting');
-    const userName = document.getElementById('userName');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const dashboardBtn = document.getElementById('dashboardBtn');
+ updatePageUI() {
+  const user = this.getCurrentUser();
+  
+  const userGreeting = document.getElementById('userGreeting');
+  const loginBtn = document.getElementById('loginBtn');
+  const signupBtn = document.getElementById('signupBtn');  // ✅ add
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userMenu = document.getElementById('userMenu');    // ✅ add
 
-    if (user) {
-      // User is logged in
-      if (userGreeting) userGreeting.textContent = `Welcome, ${user.name}!`;
-      if (userName) userName.textContent = user.name;
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'inline-block';
-      if (dashboardBtn) dashboardBtn.style.display = 'inline-block';
-    } else {
-      // User is logged out
-      if (userGreeting) userGreeting.textContent = 'Welcome, Guest';
-      if (userName) userName.textContent = 'Guest';
-      if (loginBtn) loginBtn.style.display = 'inline-block';
-      if (logoutBtn) logoutBtn.style.display = 'none';
-      if (dashboardBtn) dashboardBtn.style.display = 'none';
-    }
-  },
+  if (user) {
+    if (userGreeting) userGreeting.textContent = `Welcome, ${user.name}!`;
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (signupBtn) signupBtn.style.display = 'none';       // ✅ hide signup
+    if (userMenu) userMenu.style.display = 'flex';         // ✅ show user menu
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+  } else {
+    if (userGreeting) userGreeting.textContent = '';
+    if (loginBtn) loginBtn.style.display = 'inline-block';
+    if (signupBtn) signupBtn.style.display = 'inline-block'; // ✅ show signup
+    if (userMenu) userMenu.style.display = 'none';           // ✅ hide user menu
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+},
 
   // Add logout handlers to all logout buttons
   attachLogoutHandlers() {
