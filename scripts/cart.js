@@ -23,15 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 2. CORE FUNCTIONS
+function getCartKey() {
+    try {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user && user.id) return `cart_${user.id}`;
+    } catch(e) {}
+    return 'cart_guest';
+}
+
 function getCart() {
-    return JSON.parse(localStorage.getItem('cart')) || [];
+    return JSON.parse(localStorage.getItem(getCartKey())) || [];
 }
 
 function saveCart(cart) {
     try {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem(getCartKey(), JSON.stringify(cart));
         updateCartCount();
-        // Re-render if we are on the cart page
         if (document.getElementById('cart-items-container')) {
             renderCartPage();
         }
@@ -49,36 +56,29 @@ function updateCartCount() {
     badges.forEach(badge => badge.textContent = count);
 }
 
-// --- 3. ADD TO CART (UPDATED FOR VARIANTS) ---
+// 3. ADD TO CART
 window.addToCart = function(product, variant = '') {
     const cart = getCart();
     
-    // Create a Unique ID so different sizes are treated as different items
-    // Example: "10" vs "10-Size: 42"
     const uniqueId = variant ? `${product.id}-${variant}` : product.id.toString();
 
     const existingItem = cart.find(item => item.uniqueId === uniqueId);
 
-    // Image Safety (Quota Fix)
     let safeImage = 'https://placehold.co/150?text=Item';
     if (product.image && (product.image.startsWith('http') || product.image.length < 1000)) {
         safeImage = product.image;
-    } else {
-        // If it's a massive Base64 string, use a local placeholder to save memory
-        // safeImage = 'assets//images/product-placeholder.jpg'; 
-        safeImage = 'https://placehold.co/150?text=Item';
     }
 
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
         cart.push({
-            uniqueId: uniqueId, // New tracker
+            uniqueId: uniqueId,
             id: product.id,
             name: product.name,
             price: product.price,
             image: safeImage,
-            variant: variant, // Save the Size/Color text
+            variant: variant,
             quantity: 1
         });
     }
@@ -87,7 +87,7 @@ window.addToCart = function(product, variant = '') {
     showToast(`${product.name} ${variant ? '('+variant+')' : ''} added!`);
 };
 
-// 4. RENDER CART PAGE (UPDATED)
+// 4. RENDER CART PAGE
 function renderCartPage() {
     const cart = getCart();
     const container = document.getElementById('cart-items-container');
@@ -113,7 +113,6 @@ function renderCartPage() {
         const price = parseFloat(item.price) || 0;
         total += price * item.quantity;
         
-        // Show Variant Text (if exists)
         const variantHtml = item.variant 
             ? `<br><span style="font-size:12px; color:#777; background:#f0f0f0; padding:2px 5px; border-radius:3px;">${item.variant}</span>` 
             : '';
@@ -145,7 +144,7 @@ function renderCartPage() {
     if (totalEl) totalEl.textContent = `Ksh ${total.toLocaleString()}`;
 }
 
-// 5. ACTIONS (Now using uniqueId)
+// 5. ACTIONS
 window.removeItem = function(uniqueId) {
     let cart = getCart().filter(item => item.uniqueId !== uniqueId);
     saveCart(cart);
