@@ -4,38 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | LUXURY IMPORT</title>
-
   <link rel="stylesheet" href="style/login.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <div class="login-container">
-
     <h2>Welcome Back</h2>
     <p class="tagline">Sign in to continue</p>
-
     <form class="login-form" id="loginForm">
-
       <label for="email">Email Address</label>
       <input type="email" id="email" name="email" placeholder="you@example.com" required />
-
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Enter your password" required />
-
       <button type="submit">Sign In</button>
-
       <p class="link">
         Don't have an account? <a href="signup.html">Sign up</a>
       </p>
-
     </form>
+
+    <!-- Guest option -->
+    <div style="text-align:center; margin-top:1rem;">
+      <p style="color:#999; font-size:0.9rem; margin-bottom:0.5rem;">— or —</p>
+      <a href="index.html" style="
+        display:inline-block;
+        padding:0.6rem 2rem;
+        border:1px solid #d4a574;
+        color:#d4a574;
+        border-radius:4px;
+        text-decoration:none;
+        font-size:0.95rem;
+        font-family:'Open Sans', sans-serif;
+        transition: all 0.3s;
+      " onmouseover="this.style.background='#d4a574';this.style.color='white'"
+         onmouseout="this.style.background='transparent';this.style.color='#d4a574'">
+        Continue as Guest
+      </a>
+    </div>
   </div>
   
-<!-- ✅ FIXED: auth.js must load FIRST -->
 <script src="scripts/auth.js"></script>
 <script src="scripts/api.js"></script>
 <script src="scripts/login.js"></script>
-
 </body>
 </html>
