@@ -1,6 +1,4 @@
-if (!localStorage.getItem('token')) {
-  window.location.href = 'login.html';
-}
+
 // Cart functionality
 let cart = [];
 let cartCount = 0;
