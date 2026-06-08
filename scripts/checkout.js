@@ -37,41 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalAmount = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
 
             const orderData = {
-                userId: 1, // Default User
+                userId: 1,
                 items: cart,
                 deliveryAddress: deliveryAddress,
-                paymentMethod: 'cash_on_delivery',
+                paymentMethod: 'pending',
                 totalAmount: totalAmount
             };
 
-            try {
-                const response = await fetch('https://luxury-backend-qtck.onrender.com/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    localStorage.removeItem('cart');
-                    showToast('✅ Order Placed Successfully!');
-                    setTimeout(() => { window.location.href = 'orders.html'; }, 1500);
-                } else {
-                    alert("❌ Order Failed: " + result.message);
-                    btn.innerText = "Place Order";
-                    btn.disabled = false;
-                }
-            } catch (error) {
-                console.error(error);
-                alert("Server Error.");
-                btn.innerText = "Place Order";
-                btn.disabled = false;
-            }
+            // Save order details and redirect to payment page
+            localStorage.setItem('pendingOrder', JSON.stringify(orderData));
+            window.location.href = 'payment.html';
+            btn.innerText = "Place Order";
+            btn.disabled = false;
         });
     }
 
-    // --- FREIGHT RANGES (Your Specific Rates) ---
+    // --- FREIGHT RANGES ---
     function getFreightRange(category) {
         if(!category) return "300 - 600";
         const cat = category.toLowerCase();
@@ -84,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cat.includes('sunglass') || cat.includes('glass')) return "200 - 400";
         if (cat.includes('charm')) return "100 - 200";
         
-        return "300 - 600"; // Default
+        return "300 - 600";
     }
 
     function renderCheckoutCart() {
@@ -113,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width:100%">
                     <h4 style="margin:0; font-size:14px;">${item.name} ${variantText}</h4>
                     <p style="margin:5px 0 0 0; font-weight:bold; color:#D4AF37;">Ksh ${price.toLocaleString()} x ${item.quantity}</p>
-                    
                     <div style="background:#f9f9f9; padding:5px; border-radius:4px; margin-top:5px; font-size:11px; color:#555;">
                         🚢 Est. Freight: <strong>${range} KSh</strong> (Pay on Arrival)
                     </div>
@@ -131,7 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function getCart() { return JSON.parse(localStorage.getItem('cart')) || []; }
+function getCart() {
+    try {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user && user.id) {
+            return JSON.parse(localStorage.getItem(`cart_${user.id}`)) || [];
+        }
+    } catch(e) {}
+    return JSON.parse(localStorage.getItem('cart_guest')) || [];
+}
 
 function showToast(msg) {
     let toast = document.getElementById('toast-message');
