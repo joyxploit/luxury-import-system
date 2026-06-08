@@ -7,23 +7,6 @@ const logoutBtn = document.getElementById('logoutBtn');
 // 1. INITIALIZE
 document.addEventListener('DOMContentLoaded', loadSellerProducts);
 
-// 2. LOGOUT HANDLER - ADD THIS!
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to logout?')) {
-            // Clear any stored authentication data
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            // Add any other auth-related localStorage items you're using
-            
-            // Redirect to login or home page
-            alert('✅ Logged out successfully!');
-            window.location.href = '../pages/index.html'; // or your login page
-        }
-    });
-}
 
 // 3. IMAGE PREVIEW
 if(productImageInput) {
