@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | Luxury Import</title>
+  <link rel="stylesheet" href="style/index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Paystack -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    .payment-section {
+      padding: 3rem 0;
+      min-height: 80vh;
+      background: #f9f9f9;
+    }
+    .payment-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .payment-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      padding: 2rem;
+    }
+    .payment-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      color: #1a1a1a;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1rem;
+    }
+    .order-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: center;
+    }
+    .order-item img {
+      width: 55px;
+      height: 55px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .order-item-info h4 { margin: 0 0 3px; font-size: 13px; }
+    .order-item-info p { margin: 0; color: #d4a574; font-weight: 600; font-size: 13px; }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #eee;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .freight-note {
+      background: #fff8e1;
+      border-left: 3px solid #d4a574;
+      padding: 0.8rem 1rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 1rem;
+    }
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .payment-method {
+      border: 2px solid #eee;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .payment-method:hover { border-color: #d4a574; }
+    .payment-method.selected {
+      border-color: #d4a574;
+      background: #fff8f0;
+    }
+    .payment-method input[type="radio"] {
+      accent-color: #d4a574;
+      width: 18px;
+      height: 18px;
+    }
+    .payment-method-info h4 { margin: 0 0 3px; font-size: 0.95rem; font-weight: 600; }
+    .payment-method-info p { margin: 0; font-size: 0.8rem; color: #888; }
+    .payment-icon { font-size: 1.8rem; min-width: 40px; text-align: center; }
+    .payment-fields {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+    .payment-fields input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      margin-top: 0.5rem;
+    }
+    .payment-fields label { font-size: 0.9rem; font-weight: 500; color: #555; }
+    .paybill-info {
+      background: #e8f5e9;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .paybill-info p { margin: 0 0 5px; }
+    .paybill-info strong { color: #2e7d32; font-size: 1.1rem; }
+    .btn-pay {
+      width: 100%;
+      padding: 1rem;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.3s;
+    }
+    .btn-pay:hover { background: #d4a574; }
+    .btn-pay:disabled { background: #aaa; cursor: not-allowed; }
+    .secure-note { text-align: center; font-size: 0.8rem; color: #999; margin-top: 0.8rem; }
+    .success-msg {
+      display: none;
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 1rem;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+    @media (max-width: 768px) {
+      .payment-wrapper { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">LUXURY IMPORT</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="categories.html">Categories</a></li>
+        <li><a href="cart.html">Cart</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-icon">🛒 <span id="cart-count">0</span></a>
+        <div id="userMenu" style="display:none; align-items:center; gap:10px;">
+          <span id="userGreeting" style="color:#D4AF37; font-weight:500;"></span>
+          <a href="#" class="btn-login" id="logoutBtn">Logout</a>
+        </div>
+        <a href="login.html" class="btn-login" id="loginBtn">Login</a>
+        <a href="signup.html" class="btn-signup" id="signupBtn">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Payment Section -->
+  <section class="payment-section">
+    <div class="container">
+      <div class="payment-wrapper">
+
+        <!-- Order Summary -->
+        <div class="payment-card">
+          <h2>Order Summary</h2>
+          <div id="payment-items"></div>
+          <div class="total-row">
+            <span>Goods Total:</span>
+            <span id="payment-total">Ksh 0</span>
+          </div>
+          <div class="freight-note">
+            🚢 Freight charges are paid on arrival. You are only paying for goods now.
+          </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-card">
+          <h2>Complete Payment</h2>
+          <p style="font-size:0.9rem; color:#888; margin-bottom:1.5rem;">
+            Payment is required before your order is confirmed.
+          </p>
+
+          <div class="payment-methods">
+
+            <!-- M-Pesa -->
+            <label class="payment-method selected" id="mpesa-option">
+              <input type="radio" name="payment" value="mpesa" checked>
+              <span class="payment-icon">📱</span>
+              <div class="payment-method-info">
+                <h4>M-Pesa</h4>
+                <p>Pay via M-Pesa Paybill</p>
+              </div>
+            </label>
+
+            <!-- Paystack -->
+            <label class="payment-method" id="paystack-option">
+              <input type="radio" name="payment" value="paystack">
+              <span class="payment-icon">💳</span>
+              <div class="payment-method-info">
+                <h4>Card Payment (Paystack)</h4>
+                <p>Pay with Visa, Mastercard or Bank Transfer</p>
+              </div>
+            </label>
+
+          </div>
+
+          <!-- M-Pesa Fields -->
+          <div class="payment-fields" id="mpesa-fields" style="display:block;">
+            <div class="paybill-info">
+              <p>Send payment to:</p>
+              <p>Paybill: <strong>YOUR_PAYBILL_NUMBER</strong></p>
+              <p>Account: <strong>Your Order Number</strong></p>
+              <p>Amount: <strong id="mpesa-amount">Ksh 0</strong></p>
+            </div>
+            <label>M-Pesa Transaction Code *</label>
+            <input type="text" id="mpesa-code" placeholder="e.g. QGH7KL9XYZ" style="text-transform:uppercase;">
+            <label style="margin-top:0.8rem; display:block;">M-Pesa Phone Number *</label>
+            <input type="tel" id="mpesa-phone" placeholder="e.g. 0712 345 678">
+            <p style="font-size:0.8rem; color:#888; margin-top:0.5rem;">
+              Enter the M-Pesa confirmation code you received after payment.
+            </p>
+          </div>
+
+          <!-- Paystack Fields -->
+          <div class="payment-fields" id="paystack-fields">
+            <p style="font-size:0.9rem; color:#555; margin:0;">
+              Click the button below to pay securely with your card via Paystack.
+            </p>
+          </div>
+
+          <div class="success-msg" id="successMsg">
+            ✅ Payment confirmed! Placing your order...
+          </div>
+
+          <button class="btn-pay" id="pay-btn" style="margin-top:1.5rem;">
+            Complete Payment & Place Order
+          </button>
+          <p class="secure-note">🔒 Your payment and order details are secure</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 Luxury Import. All rights reserved. | Developed by Joy Njeri Kihara</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="scripts/cart.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Get pending order and cart
+      const orderData = JSON.parse(localStorage.getItem('pendingOrder'));
+      if (!orderData) {
+        alert('No order found. Please go back to checkout.');
+        window.location.href = 'checkout.html';
+        return;
+      }
+
+      const cartKey = typeof getCartKey === 'function' ? getCartKey() : 'cart';
+      const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+      // Render items
+      const itemsContainer = document.getElementById('payment-items');
+      const totalEl = document.getElementById('payment-total');
+      const mpesaAmount = document.getElementById('mpesa-amount');
+      let total = 0;
+
+      cart.forEach(item => {
+        const price = parseFloat(item.price) || 0;
+        total += price * item.quantity;
+        itemsContainer.innerHTML += `
+          <div class="order-item">
+            <img src="${item.image || 'https://placehold.co/55x55'}" onerror="this.src='https://placehold.co/55x55'">
+            <div class="order-item-info">
+              <h4>${item.name} ${item.variant ? '(' + item.variant + ')' : ''}</h4>
+              <p>Ksh ${price.toLocaleString()} x ${item.quantity}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      totalEl.textContent = `Ksh ${total.toLocaleString()}`;
+      if (mpesaAmount) mpesaAmount.textContent = `Ksh ${total.toLocaleString()}`;
+
+      // Payment method toggle
+      document.querySelectorAll('.payment-method input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+          radio.closest('.payment-method').classList.add('selected');
+          document.getElementById('mpesa-fields').style.display = radio.value === 'mpesa' ? 'block' : 'none';
+          document.getElementById('paystack-fields').style.display = radio.value === 'paystack' ? 'block' : 'none';
+        });
+      });
+
+      // Place order function (called after payment confirmed)
+      async function placeOrder(paymentMethod, paymentRef) {
+        const btn = document.getElementById('pay-btn');
+        btn.textContent = 'Placing Order...';
+        btn.disabled = true;
+
+        try {
+          const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+          const response = await fetch('https://luxury-backend-qtck.onrender.com/api/orders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              ...orderData,
+              paymentMethod,
+              paymentRef
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            localStorage.removeItem(cartKey);
+            localStorage.removeItem('pendingOrder');
+            document.getElementById('successMsg').style.display = 'block';
+            setTimeout(() => { window.location.href = 'orders.html'; }, 2000);
+          } else {
+            alert('❌ Order failed: ' + result.message);
+            btn.textContent = 'Complete Payment & Place Order';
+            btn.disabled = false;
+          }
+        } catch (err) {
+          alert('Server error. Please try again.');
+          btn.textContent = 'Complete Payment & Place Order';
+          btn.disabled = false;
+        }
+      }
+
+      // Pay button click
+      document.getElementById('pay-btn').addEventListener('click', async () => {
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+        // ── M-PESA ──
+        if (paymentMethod === 'mpesa') {
+          const code = document.getElementById('mpesa-code').value.trim().toUpperCase();
+          const phone = document.getElementById('mpesa-phone').value.trim();
+
+          if (!code) {
+            alert('Please enter your M-Pesa transaction code.');
+            return;
+          }
+          if (!phone) {
+            alert('Please enter your M-Pesa phone number.');
+            return;
+          }
+          if (code.length < 8) {
+            alert('Invalid M-Pesa code. Please check and try again.');
+            return;
+          }
+
+          // Place order with mpesa ref
+          await placeOrder('mpesa', code);
+        }
+
+        // ── PAYSTACK ──
+        if (paymentMethod === 'paystack') {
+          const user = JSON.parse(localStorage.getItem('currentUser'));
+          const email = orderData.deliveryAddress?.email || user?.email || '';
+
+          if (!email) {
+            alert('Email is required for card payment. Please go back to checkout.');
+            return;
+          }
+
+          // 🔑 Replace with your Paystack public key
+          const PAYSTACK_PUBLIC_KEY = 'YOUR_PAYSTACK_PUBLIC_KEY';
+
+          const handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: email,
+            amount: total * 100, // Paystack uses kobo/cents
+            currency: 'KES',
+            ref: 'LUX-' + Date.now(),
+            callback: async function(response) {
+              // Payment successful — place order
+              await placeOrder('paystack', response.reference);
+            },
+            onClose: function() {
+              alert('Payment cancelled. Your order has not been placed.');
+            }
+          });
+
+          handler.openIframe();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
