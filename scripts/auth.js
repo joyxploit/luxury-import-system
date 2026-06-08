@@ -103,10 +103,13 @@ const AuthSystem = {
 },
 
   // Add logout handlers to all logout buttons
-  attachLogoutHandlers() {
+ attachLogoutHandlers() {
     const logoutButtons = document.querySelectorAll('[id="logoutBtn"], .logout-btn, [data-logout]');
     
     logoutButtons.forEach(btn => {
+      if (btn.dataset.logoutAttached) return;
+      btn.dataset.logoutAttached = 'true';
+      
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         if (confirm('Are you sure you want to logout?')) {
