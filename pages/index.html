@@ -29,13 +29,30 @@
         <li><a href="Suggestion.html" style="color:#d4a574;">Request Item</a></li>
       </ul>
 
-      <div class="nav-actions">
+     <div class="nav-actions">
   <a href="cart.html" class="cart-icon">🛒 <span id="cart-count">0</span></a>
-  <span id="userGreeting" style="display:none; color:#D4AF37; font-weight:500; margin-right:10px;"></span>
+
+  <!-- Logged out: show these -->
   <a href="login.html" class="btn-login" id="loginBtn">Login</a>
   <a href="signup.html" class="btn-signup" id="signupBtn">Sign Up</a>
-  <a href="#" class="btn-login" id="logoutBtn" style="display:none;">Logout</a>
+
+  <!-- Logged in: show these -->
+  <div id="userMenu" style="display:none; align-items:center; gap:10px;">
+    <div style="overflow:hidden; max-width:120px;">
+      <span id="userGreeting" style="color:#D4AF37; font-weight:500; white-space:nowrap; display:inline-block; animation: marquee 8s linear infinite;"></span>
+    </div>
+    <a href="edit-profile.html" class="btn-login">Edit Profile</a>
+    <a href="#" class="btn-login" id="logoutBtn">Logout</a>
+  </div>
 </div>
+
+<!-- Scrolling name animation -->
+<style>
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+</style>
     </div>
   </nav>
 

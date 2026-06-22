@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Requests | Admin – Luxury Import</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f4f4f4; color: #1a1a1a; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: #1a1a1a; display: flex; flex-direction: column; z-index: 100; }
+    .sidebar-logo { padding: 1.8rem 1.5rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #d4a574; letter-spacing: 2px; border-bottom: 1px solid #333; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .sidebar-nav a:hover { color: #fff; background: #2a2a2a; }
+    .sidebar-nav a.active { color: #d4a574; background: #2a2a2a; border-left: 3px solid #d4a574; }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 20px; text-align: center; }
+    .sidebar-footer { padding: 1.2rem 1.5rem; border-top: 1px solid #333; font-size: 0.8rem; color: #666; }
+
+    /* Main */
+    .main { margin-left: 240px; padding: 2rem; min-height: 100vh; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #1a1a1a; }
+    .page-header p { color: #888; font-size: 0.9rem; margin-top: 2px; }
+
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: #fff; border-radius: 8px; padding: 1.2rem 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .stat-card .label { font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; color: #1a1a1a; margin-top: 4px; }
+    .stat-card .sub { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+    .stat-card.gold .value { color: #d4a574; }
+
+    /* Filters */
+    .filters-bar { background: #fff; border-radius: 8px; padding: 1rem 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 1.2rem; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+    .filters-bar input[type="text"] { flex: 1; min-width: 200px; padding: 0.55rem 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; }
+    .filters-bar input:focus, .filters-bar select:focus { border-color: #d4a574; }
+    .filters-bar select { padding: 0.55rem 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: #fff; color: #333; cursor: pointer; outline: none; }
+    .btn-refresh { padding: 0.55rem 1.2rem; background: #1a1a1a; color: #fff; border: none; border-radius: 4px; font-size: 0.85rem; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-refresh:hover { background: #d4a574; }
+
+    /* Table */
+    .table-wrap { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: #1a1a1a; color: #fff; }
+    thead th { padding: 0.9rem 1rem; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-align: left; }
+    tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; cursor: pointer; }
+    tbody tr:hover { background: #fafafa; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 0.9rem 1rem; font-size: 0.88rem; color: #333; vertical-align: middle; }
+    .customer-name { font-weight: 600; color: #1a1a1a; }
+    .customer-phone { font-size: 0.8rem; color: #888; }
+    .product-name { font-weight: 500; color: #1a1a1a; max-width: 160px; }
+    .product-desc { font-size: 0.78rem; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+    .badge-bags      { background: #fef3e2; color: #d4a574; }
+    .badge-perfumes  { background: #f3e5f5; color: #9c27b0; }
+    .badge-watches   { background: #e3f2fd; color: #1976d2; }
+    .badge-shoes     { background: #fce4ec; color: #c2185b; }
+    .badge-sunglasses{ background: #e8f5e9; color: #388e3c; }
+    .badge-charms    { background: #fff8e1; color: #f57f17; }
+    .badge-jewelry   { background: #fce4ec; color: #ad1457; }
+    .badge-apparel   { background: #e0f2f1; color: #00695c; }
+    .badge-other     { background: #f5f5f5; color: #666; }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .status-new       { background: #e3f2fd; color: #1565c0; }
+    .status-reviewing { background: #fff8e1; color: #f57f17; }
+    .status-sourcing  { background: #f3e5f5; color: #7b1fa2; }
+    .status-done      { background: #e8f5e9; color: #2e7d32; }
+    .budget-cell { font-weight: 600; color: #1a1a1a; }
+    .no-budget { color: #ccc; font-size: 0.8rem; }
+    .img-thumb { width: 38px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; cursor: pointer; }
+    .img-count { display: inline-block; background: #f0f0f0; color: #666; font-size: 0.75rem; font-weight: 600; padding: 2px 7px; border-radius: 10px; margin-left: 4px; }
+    .date-cell { font-size: 0.82rem; color: #888; }
+    .action-btn { padding: 5px 12px; border: none; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .btn-view { background: #1a1a1a; color: #fff; }
+    .btn-view:hover { background: #d4a574; }
+    .loading-row td, .empty-row td { text-align: center; padding: 3rem; color: #aaa; font-size: 0.95rem; }
+    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #eee; border-top-color: #d4a574; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 0.5rem; padding: 1.2rem; border-top: 1px solid #f0f0f0; flex-wrap: wrap; }
+    .page-btn { padding: 6px 14px; border: 1px solid #ddd; background: #fff; border-radius: 4px; font-size: 0.85rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .page-btn:hover { border-color: #d4a574; color: #d4a574; }
+    .page-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Detail Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 10px; width: 100%; max-width: 700px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: auto; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid #eee; background: #1a1a1a; border-radius: 10px 10px 0 0; }
+    .modal-header h3 { font-family: 'Playfair Display', serif; color: #d4a574; font-size: 1.1rem; }
+    .modal-close { background: none; border: none; color: #aaa; font-size: 1.4rem; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-body { padding: 1.5rem; }
+    .modal-tabs { display: flex; gap: 0; border-bottom: 2px solid #f0f0f0; margin-bottom: 1.5rem; }
+    .tab-btn { padding: 0.7rem 1.2rem; border: none; background: none; font-size: 0.88rem; font-weight: 600; color: #aaa; cursor: pointer; font-family: 'Inter', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+    .tab-btn.active { color: #d4a574; border-bottom-color: #d4a574; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .detail-section { margin-bottom: 1.5rem; }
+    .detail-section h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #d4a574; margin-bottom: 0.8rem; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .detail-item .dlabel { font-size: 0.75rem; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .detail-item .dvalue { font-size: 0.92rem; color: #1a1a1a; font-weight: 500; margin-top: 2px; }
+    .detail-item.full { grid-column: 1 / -1; }
+    .desc-box { background: #f9f9f9; border-radius: 6px; padding: 0.9rem 1rem; font-size: 0.9rem; color: #333; line-height: 1.6; }
+    .modal-images { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 0.5rem; }
+    .modal-images img { width: 90px; height: 90px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; cursor: zoom-in; transition: transform 0.2s; }
+    .modal-images img:hover { transform: scale(1.05); }
+    .no-images { color: #bbb; font-size: 0.85rem; }
+    .status-select-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+    .status-select { padding: 0.6rem 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; font-family: 'Inter', sans-serif; color: #333; background: #fff; cursor: pointer; outline: none; }
+    .status-select:focus { border-color: #d4a574; }
+    .btn-save-status { padding: 0.6rem 1.2rem; background: #d4a574; color: #fff; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
+    .btn-save-status:hover { background: #c49060; }
+    .status-saved-msg { font-size: 0.82rem; color: #2e7d32; margin-top: 0.5rem; display: none; }
+
+    /* Convert to Product tab */
+    .convert-intro { background: #fef3e2; border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #7a5c2e; line-height: 1.5; }
+    .convert-intro strong { display: block; margin-bottom: 4px; font-size: 0.92rem; }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 0.35rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.65rem 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; font-family: 'Inter', sans-serif; color: #333; outline: none; transition: border 0.2s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #d4a574; }
+    .form-group textarea { height: 80px; resize: vertical; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-convert { width: 100%; padding: 0.85rem; background: #1a1a1a; color: #fff; border: none; border-radius: 4px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 0.5rem; transition: background 0.2s; letter-spacing: 0.5px; }
+    .btn-convert:hover { background: #d4a574; }
+    .btn-convert:disabled { background: #aaa; cursor: not-allowed; }
+    .convert-result { display: none; padding: 1rem; border-radius: 6px; font-size: 0.9rem; font-weight: 500; text-align: center; margin-top: 1rem; }
+    .convert-result.success { background: #e8f5e9; color: #2e7d32; display: block; }
+    .convert-result.error { background: #ffebee; color: #c62828; display: block; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; align-items: center; justify-content: center; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 6px; object-fit: contain; }
+    .lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo, .sidebar-nav a span.text, .sidebar-footer { display: none; }
+      .sidebar-nav a { justify-content: center; padding: 1rem; }
+      .main { margin-left: 60px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .main { padding: 1rem; }
+      .detail-grid, .form-row-2 { grid-template-columns: 1fr; }
+      table thead { display: none; }
+      tbody tr { display: block; padding: 1rem; border-bottom: 1px solid #eee; }
+      tbody td { display: block; padding: 0.2rem 0; border: none; }
+      tbody td::before { content: attr(data-label); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #aaa; display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">LUXURY IMPORT</div>
+  <div class="sidebar-nav">
+    <a href="dashboard.html"><span class="icon">📊</span><span class="text">Dashboard</span></a>
+    <a href="products.html"><span class="icon">🛍️</span><span class="text">Products</span></a>
+    <a href="orders.html"><span class="icon">📦</span><span class="text">Orders</span></a>
+    <a href="suggestions.html" class="active"><span class="icon">💬</span><span class="text">Product Requests</span></a>
+    <a href="categories.html"><span class="icon">🗂️</span><span class="text">Categories</span></a>
+    <a href="customers.html"><span class="icon">👥</span><span class="text">Customers</span></a>
+    <a href="../index.html"><span class="icon">🏠</span><span class="text">Storefront</span></a>
+  </div>
+  <div class="sidebar-footer">Logged in as Admin</div>
+</nav>
+
+<!-- Main -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <h1>Product Requests</h1>
+      <p>Customer item requests submitted for sourcing from China</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card gold">
+      <div class="label">Total Requests</div>
+      <div class="value" id="statTotal">–</div>
+      <div class="sub">All time</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">New</div>
+      <div class="value" id="statNew">–</div>
+      <div class="sub">Awaiting review</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">In Progress</div>
+      <div class="value" id="statProgress">–</div>
+      <div class="sub">Reviewing / Sourcing</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Completed</div>
+      <div class="value" id="statDone">–</div>
+      <div class="sub">Fulfilled</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <input type="text" id="searchInput" placeholder="Search by name, product, email…">
+    <select id="filterCategory">
+      <option value="">All Categories</option>
+      <option value="bags">Designer Bags</option>
+      <option value="perfumes">Perfumes</option>
+      <option value="watches">Watches</option>
+      <option value="shoes">Shoes</option>
+      <option value="sunglasses">Sunglasses</option>
+      <option value="charms">Bag Charms</option>
+      <option value="jewelry">Jewelry</option>
+      <option value="apparel">Fashion Apparel</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="filterStatus">
+      <option value="">All Statuses</option>
+      <option value="new">New</option>
+      <option value="reviewing">Reviewing</option>
+      <option value="sourcing">Sourcing</option>
+      <option value="done">Done</option>
+    </select>
+    <button class="btn-refresh" onclick="loadSuggestions()">↻ Refresh</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Customer</th>
+          <th>Product Request</th>
+          <th>Category</th>
+          <th>Budget</th>
+          <th>Images</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr class="loading-row">
+          <td colspan="9"><div><div class="spinner"></div></div><div>Loading requests…</div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</main>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Request Details</h3>
+      <button class="modal-close" onclick="closeModalDirect()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Tabs -->
+      <div class="modal-tabs">
+        <button class="tab-btn active" onclick="switchTab('details', this)">📋 Request Details</button>
+        <button class="tab-btn" onclick="switchTab('status', this)">🔄 Update Status</button>
+        <button class="tab-btn" onclick="switchTab('convert', this)">➕ Convert to Product</button>
+      </div>
+
+      <!-- Tab: Details -->
+      <div class="tab-content active" id="tab-details">
+        <div class="detail-section">
+          <h4>Customer Info</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="dlabel">Name</div><div class="dvalue" id="dName">–</div></div>
+            <div class="detail-item"><div class="dlabel">Phone</div><div class="dvalue" id="dPhone">–</div></div>
+            <div class="detail-item full"><div class="dlabel">Email</div><div class="dvalue" id="dEmail">–</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4>Product Details</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="dlabel">Product</div><div class="dvalue" id="dProduct">–</div></div>
+            <div class="detail-item"><div class="dlabel">Category</div><div class="dvalue" id="dCategory">–</div></div>
+            <div class="detail-item"><div class="dlabel">Budget</div><div class="dvalue" id="dBudget">–</div></div>
+            <div class="detail-item"><div class="dlabel">Submitted</div><div class="dvalue" id="dDate">–</div></div>
+            <div class="detail-item full">
+              <div class="dlabel">Description</div>
+              <div class="desc-box" id="dDescription">–</div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4>Reference Images</h4>
+          <div class="modal-images" id="dImages"></div>
+        </div>
+      </div>
+
+      <!-- Tab: Status -->
+      <div class="tab-content" id="tab-status">
+        <div class="detail-section">
+          <h4>Current Status</h4>
+          <p style="font-size:0.88rem; color:#666; margin-bottom:1rem;">Update where this request is in your sourcing process.</p>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem; margin-bottom:1.5rem;">
+            <label style="display:flex;align-items:center;gap:10px;padding:0.9rem 1rem;border:2px solid #eee;border-radius:8px;cursor:pointer;" id="status-opt-new">
+              <input type="radio" name="statusRadio" value="new"> <span>🔵 <strong>New</strong> — Just received, not yet reviewed</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:0.9rem 1rem;border:2px solid #eee;border-radius:8px;cursor:pointer;" id="status-opt-reviewing">
+              <input type="radio" name="statusRadio" value="reviewing"> <span>🟡 <strong>Reviewing</strong> — You're checking availability & pricing</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:0.9rem 1rem;border:2px solid #eee;border-radius:8px;cursor:pointer;" id="status-opt-sourcing">
+              <input type="radio" name="statusRadio" value="sourcing"> <span>🟣 <strong>Sourcing</strong> — Item is being ordered from China</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:0.9rem 1rem;border:2px solid #eee;border-radius:8px;cursor:pointer;" id="status-opt-done">
+              <input type="radio" name="statusRadio" value="done"> <span>🟢 <strong>Done</strong> — Request fulfilled / product listed</span>
+            </label>
+          </div>
+
+          <button class="btn-save-status" onclick="updateStatus()">Save Status</button>
+          <p class="status-saved-msg" id="statusMsg">✅ Status updated successfully</p>
+        </div>
+      </div>
+
+      <!-- Tab: Convert to Product -->
+      <div class="tab-content" id="tab-convert">
+        <div class="convert-intro">
+          <strong>📦 Convert this request into a product listing</strong>
+          We've pre-filled the form using the customer's request. Review, set your price, and add it to your store.
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="cName" placeholder="Product name">
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="cCategory">
+              <option value="">Select category</option>
+              <option value="bags">Designer Bags</option>
+              <option value="perfumes">Perfumes</option>
+              <option value="watches">Watches</option>
+              <option value="shoes">Shoes</option>
+              <option value="sunglasses">Sunglasses</option>
+              <option value="charms">Bag Charms</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="apparel">Fashion Apparel</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="cDescription" placeholder="Product description"></textarea>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Price (KSh) *</label>
+            <input type="number" id="cPrice" placeholder="e.g. 8500" min="0">
+          </div>
+          <div class="form-group">
+            <label>Stock Quantity *</label>
+            <input type="number" id="cStock" placeholder="e.g. 1" min="1" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Image URL <span style="color:#aaa;font-weight:400;">(paste a product image link)</span></label>
+          <input type="text" id="cImage" placeholder="https://...">
+        </div>
+
+        <div id="convertResult" class="convert-result"></div>
+        <button class="btn-convert" id="convertBtn" onclick="convertToProduct()">➕ Add to Store</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">×</button>
+  <img id="lightboxImg" src="" alt="Preview">
+</div>
+
+<script>
+  const API = 'https://luxury-backend-qtck.onrender.com/api/suggestions';
+  const PRODUCTS_API = 'https://luxury-backend-qtck.onrender.com/api/products';
+  const PER_PAGE = 15;
+
+  let allSuggestions = [];
+  let filtered = [];
+  let currentPage = 1;
+  let currentId = null;
+
+  // ── Load ──────────────────────────────────────────
+  async function loadSuggestions() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = `<tr class="loading-row"><td colspan="9"><div><div class="spinner"></div></div><div>Loading requests…</div></td></tr>`;
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      allSuggestions = data.suggestions || [];
+      updateStats();
+      applyFilters();
+    } catch (err) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="9">⚠️ Could not load requests.<br><small>${err.message}</small></td></tr>`;
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('statTotal').textContent = allSuggestions.length;
+    document.getElementById('statNew').textContent = allSuggestions.filter(s => (s.status || 'new') === 'new').length;
+    document.getElementById('statProgress').textContent = allSuggestions.filter(s => ['reviewing','sourcing'].includes(s.status || 'new')).length;
+    document.getElementById('statDone').textContent = allSuggestions.filter(s => (s.status || 'new') === 'done').length;
+  }
+
+  function applyFilters() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const cat = document.getElementById('filterCategory').value;
+    const status = document.getElementById('filterStatus').value;
+    filtered = allSuggestions.filter(s => {
+      const matchSearch = !search || s.name?.toLowerCase().includes(search) || s.email?.toLowerCase().includes(search) || s.product?.toLowerCase().includes(search);
+      const matchCat = !cat || s.category === cat;
+      const matchStatus = !status || (s.status || 'new') === status;
+      return matchSearch && matchCat && matchStatus;
+    });
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  }
+
+  // ── Render ─────────────────────────────────────────
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const start = (currentPage - 1) * PER_PAGE;
+    const page = filtered.slice(start, start + PER_PAGE);
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No requests found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = page.map((s, i) => {
+      const images = parseImages(s.images);
+      const status = s.status || 'new';
+      const date = new Date(s.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      return `
+        <tr onclick="openModal(${s.id})">
+          <td data-label="#">${start + i + 1}</td>
+          <td data-label="Customer">
+            <div class="customer-name">${esc(s.name)}</div>
+            <div class="customer-phone">${esc(s.phone)}</div>
+          </td>
+          <td data-label="Product">
+            <div class="product-name">${esc(s.product)}</div>
+            <div class="product-desc">${esc(s.description)}</div>
+          </td>
+          <td data-label="Category"><span class="badge badge-${s.category}">${esc(s.category)}</span></td>
+          <td data-label="Budget">${s.budget ? `<span class="budget-cell">KSh ${Number(s.budget).toLocaleString()}</span>` : '<span class="no-budget">Not set</span>'}</td>
+          <td data-label="Images">
+            ${images.length > 0
+              ? `<img class="img-thumb" src="${images[0]}" onclick="event.stopPropagation();openLightbox('${images[0]}')">${images.length > 1 ? `<span class="img-count">+${images.length-1}</span>` : ''}`
+              : '<span style="color:#ccc;font-size:0.8rem;">None</span>'}
+          </td>
+          <td data-label="Status"><span class="status-badge status-${status}">${capitalize(status)}</span></td>
+          <td data-label="Date" class="date-cell">${date}</td>
+          <td data-label="Action"><button class="action-btn btn-view" onclick="event.stopPropagation();openModal(${s.id})">View</button></td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filtered.length / PER_PAGE);
+    const wrap = document.getElementById('pagination');
+    if (total <= 1) { wrap.innerHTML = ''; return; }
+    let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Prev</button>`;
+    for (let i = 1; i <= total; i++) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>Next ›</button>`;
+    wrap.innerHTML = html;
+  }
+
+  function goPage(p) {
+    const total = Math.ceil(filtered.length / PER_PAGE);
+    if (p < 1 || p > total) return;
+    currentPage = p;
+    renderTable();
+    renderPagination();
+  }
+
+  // ── Modal ──────────────────────────────────────────
+  function openModal(id) {
+    const s = allSuggestions.find(x => x.id === id);
+    if (!s) return;
+    currentId = id;
+
+    const images = parseImages(s.images);
+    const date = new Date(s.created_at).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const status = s.status || 'new';
+
+    // Details tab
+    document.getElementById('modalTitle').textContent = s.product;
+    document.getElementById('dName').textContent = s.name;
+    document.getElementById('dPhone').textContent = s.phone;
+    document.getElementById('dEmail').textContent = s.email;
+    document.getElementById('dProduct').textContent = s.product;
+    document.getElementById('dCategory').textContent = s.category;
+    document.getElementById('dBudget').textContent = s.budget ? `KSh ${Number(s.budget).toLocaleString()}` : 'Not specified';
+    document.getElementById('dDate').textContent = date;
+    document.getElementById('dDescription').textContent = s.description;
+    const imgWrap = document.getElementById('dImages');
+    imgWrap.innerHTML = images.length > 0
+      ? images.map(src => `<img src="${src}" onclick="openLightbox('${src}')">`).join('')
+      : '<span class="no-images">No reference images uploaded.</span>';
+
+    // Status tab — set radio
+    document.querySelectorAll('input[name="statusRadio"]').forEach(r => {
+      r.checked = r.value === status;
+      const label = r.closest('label');
+      label.style.borderColor = r.checked ? '#d4a574' : '#eee';
+      label.style.background = r.checked ? '#fef3e2' : '#fff';
+    });
+    document.querySelectorAll('input[name="statusRadio"]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('input[name="statusRadio"]').forEach(x => {
+          x.closest('label').style.borderColor = x.checked ? '#d4a574' : '#eee';
+          x.closest('label').style.background = x.checked ? '#fef3e2' : '#fff';
+        });
+      });
+    });
+    document.getElementById('statusMsg').style.display = 'none';
+
+    // Convert tab — pre-fill
+    document.getElementById('cName').value = s.product;
+    document.getElementById('cCategory').value = s.category;
+    document.getElementById('cDescription').value = s.description;
+    document.getElementById('cPrice').value = s.budget || '';
+    document.getElementById('cStock').value = 1;
+    document.getElementById('cImage').value = images.length > 0 ? images[0] : '';
+    document.getElementById('convertResult').className = 'convert-result';
+    document.getElementById('convertResult').textContent = '';
+    document.getElementById('convertBtn').disabled = false;
+    document.getElementById('convertBtn').textContent = '➕ Add to Store';
+
+    // Reset to first tab
+    switchTab('details', document.querySelector('.tab-btn'));
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
+  function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('open'); currentId = null; }
+
+  // ── Update Status ──────────────────────────────────
+  async function updateStatus() {
+    if (!currentId) return;
+    const selected = document.querySelector('input[name="statusRadio"]:checked');
+    if (!selected) return;
+    const newStatus = selected.value;
+
+    try {
+      const res = await fetch(`${API}/${currentId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const s = allSuggestions.find(x => x.id === currentId);
+        if (s) s.status = newStatus;
+        document.getElementById('statusMsg').style.display = 'block';
+        setTimeout(() => { document.getElementById('statusMsg').style.display = 'none'; }, 3000);
+        updateStats();
+        applyFilters();
+      } else {
+        alert('Failed to update: ' + data.message);
+      }
+    } catch (err) {
+      alert('Network error. Could not update status.');
+    }
+  }
+
+  // ── Convert to Product ─────────────────────────────
+  async function convertToProduct() {
+    const name = document.getElementById('cName').value.trim();
+    const category = document.getElementById('cCategory').value;
+    const description = document.getElementById('cDescription').value.trim();
+    const price = document.getElementById('cPrice').value;
+    const stock = document.getElementById('cStock').value;
+    const image = document.getElementById('cImage').value.trim();
+    const resultEl = document.getElementById('convertResult');
+    const btn = document.getElementById('convertBtn');
+
+    if (!name || !category || !description || !price) {
+      resultEl.textContent = '⚠️ Please fill in Name, Category, Description and Price.';
+      resultEl.className = 'convert-result error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Adding to store…';
+    resultEl.className = 'convert-result';
+    resultEl.textContent = '';
+
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const res = await fetch(PRODUCTS_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({ name, category, description, price: Number(price), stock: Number(stock), image_url: image })
+      });
+      const data = await res.json();
+
+      if (data.success || res.ok) {
+        resultEl.textContent = '✅ Product added to your store successfully!';
+        resultEl.className = 'convert-result success';
+        btn.textContent = '✅ Added!';
+
+        // Auto-mark request as done
+        await fetch(`${API}/${currentId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'done' })
+        });
+        const s = allSuggestions.find(x => x.id === currentId);
+        if (s) s.status = 'done';
+        updateStats();
+        applyFilters();
+      } else {
+        throw new Error(data.message || 'Could not add product.');
+      }
+    } catch (err) {
+      resultEl.textContent = '❌ ' + err.message;
+      resultEl.className = 'convert-result error';
+      btn.disabled = false;
+      btn.textContent = '➕ Add to Store';
+    }
+  }
+
+  // ── Lightbox ───────────────────────────────────────
+  function openLightbox(src) { document.getElementById('lightboxImg').src = src; document.getElementById('lightbox').classList.add('open'); }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+  // ── Helpers ────────────────────────────────────────
+  function parseImages(raw) {
+    if (!raw) return [];
+    try { const p = typeof raw === 'string' ? JSON.parse(raw) : raw; return Array.isArray(p) ? p : []; } catch { return []; }
+  }
+  function esc(str) { return str ? str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+  function capitalize(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+  // ── Event listeners ────────────────────────────────
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('filterCategory').addEventListener('change', applyFilters);
+  document.getElementById('filterStatus').addEventListener('change', applyFilters);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModalDirect(); closeLightbox(); } });
+
+  loadSuggestions();
+</script>
+</body>
+</html>
