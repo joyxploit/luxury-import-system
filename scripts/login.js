@@ -47,15 +47,21 @@ loginForm.addEventListener('submit', async function(e) {
       
       alert('Login successful! Redirecting...');
       
-      if (response.user.role === 'customer') {
-        window.location.href = 'index.html';
-      } else if (response.user.role === 'seller') {
-        window.location.href = 'seller-dashboard.html';
-      } else if (response.user.role === 'admin') {
-        window.location.href = 'seller-dashboard.html';
-      } else {
-        window.location.href = 'index.html';
-      }
+     if (response.user.role === 'customer') {
+  window.location.href = 'index.html';
+} else if (response.user.role === 'seller') {
+  window.location.href = 'seller-dashboard.html';
+} else if (response.user.role === 'super_admin') {
+  window.location.href = 'admin/super-admin.html';
+} else if (response.user.role === 'errand_guy') {
+  window.location.href = 'errand-dashboard.html';
+} else if (response.user.role === 'shop_attendant') {
+  window.location.href = 'attendant-dashboard.html';
+} else if (response.user.role === 'pa') {
+  window.location.href = 'pa-dashboard.html';
+} else {
+  window.location.href = 'index.html';
+}
     } else {
       alert('Login failed: ' + (response.message || 'Unknown error'));
     }
