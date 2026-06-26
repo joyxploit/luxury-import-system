@@ -66,15 +66,23 @@ form.addEventListener('submit', async function (e) {
       alert(`Registration successful as ${response.user.role}! Welcome ${response.user.name}!`);
       
       // Redirect based on role after 2 seconds
-      setTimeout(() => {
-        if (response.user.role === 'seller') {
-          window.location.href = 'seller-dashboard.html';
-        } else if (response.user.role === 'customer') {
-          window.location.href = 'index.html';
-        } else {
-          window.location.href = 'index.html';
-        }
-      }, 2000);
+     setTimeout(() => {
+  if (response.user.role === 'seller') {
+    window.location.href = 'seller-dashboard.html';
+  } else if (response.user.role === 'customer') {
+    window.location.href = 'index.html';
+  } else if (response.user.role === 'super_admin') {
+    window.location.href = 'admin/super-admin.html';
+  } else if (response.user.role === 'errand_guy') {
+    window.location.href = 'errand-dashboard.html';
+  } else if (response.user.role === 'shop_attendant') {
+    window.location.href = 'attendant-dashboard.html';
+  } else if (response.user.role === 'pa') {
+    window.location.href = 'pa-dashboard.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}, 2000);
     }
   } catch (error) {
     alert('Registration failed: ' + error.message);
