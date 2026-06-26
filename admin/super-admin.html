@@ -434,7 +434,7 @@ async function apiFetch(path, opts = {}) {
   });
   if (res.status === 401 || res.status === 403) {
     toast('Session expired. Please log in again.', 'error');
-    setTimeout(() => window.location.href = '/login.html', 1500);
+    setTimeout(() => window.location.href = '../login.html', 1500);
     throw new Error('Unauthorized');
   }
   const data = await res.json();
@@ -510,7 +510,7 @@ function refreshSection() {
 
 function logout() {
   localStorage.removeItem('token');
-  window.location.href = '/login.html';
+  window.location.href = '../login.html';
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────
