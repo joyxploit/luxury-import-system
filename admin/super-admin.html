@@ -421,7 +421,8 @@
 // ── Config ────────────────────────────────────────────────────────────────
 const API = 'https://luxury-backend-qtck.onrender.com/api/admin';
 
-function getToken() { return localStorage.getItem('token'); }
+// FIX 1: Read token from 'authToken' to match what auth.js saves
+function getToken() { return localStorage.getItem('authToken'); }
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API + path, {
@@ -434,7 +435,7 @@ async function apiFetch(path, opts = {}) {
   });
   if (res.status === 401 || res.status === 403) {
     toast('Session expired. Please log in again.', 'error');
-    setTimeout(() => window.location.href = '../login.html', 1500);
+    setTimeout(() => window.location.href = '/login.html', 1500);
     throw new Error('Unauthorized');
   }
   const data = await res.json();
@@ -508,9 +509,17 @@ function refreshSection() {
   if (active) go(active);
 }
 
+// FIX 2: Clear all localStorage keys that auth.js sets, not just 'token'
 function logout() {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
-  window.location.href = '../login.html';
+  window.location.href = '/login.html';
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────
@@ -560,7 +569,6 @@ async function loadDashboard() {
         <div class="bar-val">${c.sales}</div>
       </div>`).join('');
 
-    // update badge
     document.getElementById('issue-count').textContent = openIssues || '—';
 
   } catch (err) {
@@ -657,7 +665,6 @@ async function loadPermissions() {
     const { permissions } = await apiFetch('/permissions');
     permissions.forEach(p => { permState[p.role + '_' + p.permission] = p.enabled; });
   } catch {
-    // fallback — all on
     Object.entries(DEFAULT_PERMS).forEach(([r,ps]) => ps.forEach(p => { permState[r+'_'+p] = true; }));
   }
 
@@ -686,7 +693,6 @@ async function togglePerm(role, perm, el) {
     await apiFetch('/permissions', { method: 'PUT', body: JSON.stringify({ role, permission: perm, enabled: !wasOn }) });
     toast(`"${perm}" ${!wasOn ? 'enabled' : 'disabled'} for ${role}`);
   } catch (err) {
-    // revert
     el.classList.toggle('on', wasOn);
     el.classList.toggle('off', !wasOn);
     toast(err.message, 'error');
@@ -835,7 +841,6 @@ async function loadLog() {
 
 // ── Init ──────────────────────────────────────────────────────────────────
 (async () => {
-  // Show admin name if available from token
   const token = getToken();
   if (token) {
     try {
