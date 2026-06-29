@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,9 +6,7 @@
   <title>Seller Dashboard | Luxury Import</title>
   <link rel="stylesheet" href="style/seller.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
   <style>
-
     .btn-home {
       text-decoration: none;
       background-color: #D4AF37;
@@ -20,103 +18,297 @@
       font-family: 'Montserrat', sans-serif;
       transition: background 0.3s;
     }
-    .btn-home:hover {
-      background-color: #b5952f;
+    .btn-home:hover { background-color: #b5952f; }
+
+    /* ── Tab Nav ── */
+    .tab-nav {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 22px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0;
     }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #D4AF37; background: #fdf8ec; }
+    .tab-btn.active { color: #D4AF37; border-bottom-color: #D4AF37; background: #fdf8ec; }
+
+    /* ── Tab Panels ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Products tab keeps original 2-col grid ── */
+    .products-tab-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .products-tab-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Orders / Customers table ── */
+    .panel-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+      padding: 20px;
+    }
+    .panel-card h2 { margin-top: 0; font-size: 1.2rem; color: #111; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-top: 12px;
+    }
+    .data-table th {
+      background: #f3f4f6;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #fafafa; }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-pending   { background: #fef3c7; color: #92400e; }
+    .badge-shipped   { background: #dbeafe; color: #1e40af; }
+    .badge-delivered { background: #d1fae5; color: #065f46; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+    .badge-paid      { background: #d1fae5; color: #065f46; }
+    .badge-unpaid    { background: #fee2e2; color: #991b1b; }
+
+    /* Status select dropdown */
+    .status-select {
+      padding: 5px 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      background: white;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .stat-card .stat-value { font-size: 1.8rem; font-weight: 700; color: #D4AF37; }
+    .stat-card .stat-label { font-size: 12px; color: #6b7280; margin-top: 4px; }
+
+    /* Search bar */
+    .search-bar {
+      width: 100%;
+      padding: 9px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    .search-bar:focus { border-color: #D4AF37; }
+
+    /* Loading / empty states */
+    .state-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* Expandable order items */
+    .expand-btn {
+      background: none;
+      border: 1px solid #e5e7eb;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    .expand-btn:hover { background: #f3f4f6; }
+    .order-items-detail {
+      display: none;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #374151;
+    }
+    .order-items-detail.open { display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    
-    <header class="header">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>Seller Dashboard</h1>
-        <a href="../pages/index.html" class="btn-home">Back to Home</a>
-        <a href="admin/suggestions.html" class="btn-home" style="background-color:#1a1a1a;">📋 Product Requests</a>
-        <button class="icon-btn" id="logoutBtn" title="Logout">
-         <span class="icon">ðŸšª log out </span>
-         </button>
+<div class="container">
 
+  <header class="header">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <h1>Seller Dashboard</h1>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="../pages/index.html" class="btn-home">🏠 Storefront</a>
+        <a href="admin/suggestions.html" class="btn-home" style="background:#1a1a1a;">📋 Requests</a>
+        <button class="icon-btn" id="logoutBtn" title="Logout" style="background:#ef4444;color:white;border:none;padding:8px 14px;border-radius:4px;font-weight:600;cursor:pointer;">🚪 Logout</button>
       </div>
-      <p>Manage your inventory </p>
-    </header>
+    </div>
+    <p style="margin:6px 0 0;">Manage inventory, view orders &amp; payments</p>
+  </header>
 
-    <main class="main-grid">
-      
+  <!-- Tab Nav -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="products">🛍️ Products</button>
+    <button class="tab-btn" data-tab="orders">📦 Orders &amp; Customers</button>
+    <button class="tab-btn" data-tab="payments">💳 Payments</button>
+  </nav>
+
+  <!-- ══════════════ TAB: PRODUCTS ══════════════ -->
+  <div class="tab-panel active" id="tab-products">
+    <div class="products-tab-grid">
+
       <section class="form-section">
         <div class="form-card">
-          <h2 id="form-title">âž• Add New Product</h2>
-          
+          <h2 id="form-title">➕ Add New Product</h2>
           <form id="sellerForm">
-            
             <div class="form-group">
               <label for="productName">Product Name *</label>
               <input type="text" id="productName" placeholder="e.g., Gold Rolex" required>
             </div>
-
             <div class="form-group">
               <label for="productPrice">Price (KSh) *</label>
               <input type="number" id="productPrice" placeholder="150000" required min="0">
             </div>
-
             <div class="form-group">
               <label for="productCategory">Category *</label>
               <select id="productCategory" required>
                 <option value="">Select Category</option>
-                <option value="bags">ðŸ‘œ Designer Bags</option>
-                <option value="perfumes">ðŸŒº Luxury Perfumes</option>
-                <option value="watches">âŒš Premium Watches</option>
-                <option value="shoes">ðŸ‘ž Designer Shoes</option>
-                <option value="sunglasses">ðŸ•¶ï¸ Sunglasses</option>
-                <option value="charms">ðŸ“¿ Bag Charms</option>
-                <option value="jewelry">ðŸ’Ž Jewelry</option>
-                <option value="apparel">ðŸ§¥ Fashion Apparel</option>
+                <option value="bags">👜 Designer Bags</option>
+                <option value="perfumes">🌺 Luxury Perfumes</option>
+                <option value="watches">⌚ Premium Watches</option>
+                <option value="shoes">👞 Designer Shoes</option>
+                <option value="sunglasses">🕶️ Sunglasses</option>
+                <option value="charms">📿 Bag Charms</option>
+                <option value="jewelry">💎 Jewelry</option>
+                <option value="apparel">🧥 Fashion Apparel</option>
               </select>
             </div>
-
             <div class="form-group">
               <label for="productDescription">Description *</label>
-              <textarea id="productDescription" placeholder="Describe item condition and details..." style="width:100%; height:80px; padding:10px; border:1px solid #ddd;" required></textarea>
+              <textarea id="productDescription" placeholder="Describe item condition and details..." style="width:100%;height:80px;padding:10px;border:1px solid #ddd;" required></textarea>
             </div>
-
             <div class="form-group">
               <label for="productImage">Product Image *</label>
               <input type="file" id="productImage" accept="image/*" required>
-              
-              <div id="previewContainer" style="display: none; margin-top: 10px; border: 1px solid #eee; padding: 5px;">
-                  <p style="margin:0 0 5px 0; font-size:12px; color:#666;">Preview:</p>
-                  <img id="productImagePreview" src="" alt="Preview" style="width: 100%; height: 200px; object-fit: contain;">
+              <div id="previewContainer" style="display:none;margin-top:10px;border:1px solid #eee;padding:5px;">
+                <p style="margin:0 0 5px 0;font-size:12px;color:#666;">Preview:</p>
+                <img id="productImagePreview" src="" alt="Preview" style="width:100%;height:200px;object-fit:contain;">
               </div>
             </div>
-
             <div class="button-group">
               <button type="submit" id="submitBtn" class="btn-primary">Publish Item</button>
             </div>
-
           </form>
         </div>
       </section>
 
       <section class="products-section">
         <div class="products-card">
-      
-
-          <div id="noProducts" class="no-products" style="display: none;">
+          <div id="noProducts" class="no-products" style="display:none;">
             <p>No products yet</p>
             <span>Add your first product to get started!</span>
           </div>
-
           <div id="sellerProducts" class="seller-products-grid">
-            <p style="text-align: center; padding: 20px;">Loading...</p>
+            <p style="text-align:center;padding:20px;">Loading...</p>
           </div>
         </div>
       </section>
 
-    </main>
+    </div>
   </div>
 
-  <script src="scripts/api.js"></script>
-  <script src="scripts/seller.js"></script>
-  <script src="scripts/auth.js"></script>
+  <!-- ══════════════ TAB: ORDERS & CUSTOMERS ══════════════ -->
+  <div class="tab-panel" id="tab-orders">
+
+    <!-- Stats -->
+    <div class="stats-row" id="orderStats">
+      <div class="stat-card"><div class="stat-value" id="statTotal">—</div><div class="stat-label">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPending">—</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card"><div class="stat-value" id="statShipped">—</div><div class="stat-label">Shipped</div></div>
+      <div class="stat-card"><div class="stat-value" id="statDelivered">—</div><div class="stat-label">Delivered</div></div>
+      <div class="stat-card"><div class="stat-value" id="statRevenue">—</div><div class="stat-label">Total Revenue (KSh)</div></div>
+    </div>
+
+    <div class="panel-card">
+      <h2>📦 All Orders</h2>
+      <input class="search-bar" id="orderSearch" type="text" placeholder="Search by customer name, email, order #…">
+      <div id="ordersTableWrap">
+        <div class="state-msg">Loading orders…</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════ TAB: PAYMENTS ══════════════ -->
+  <div class="tab-panel" id="tab-payments">
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value" id="payStatTotal">—</div><div class="stat-label">Total Collected (KSh)</div></div>
+      <div class="stat-card"><div class="stat-value" id="payStatPaid">—</div><div class="stat-label">Paid Orders</div></div>
+      <div class="stat-card"><div class="stat-value" id="payStatUnpaid">—</div><div class="stat-label">Unpaid Orders</div></div>
+    </div>
+
+    <div class="panel-card">
+      <h2>💳 Payment Records</h2>
+      <input class="search-bar" id="paySearch" type="text" placeholder="Search by customer, order #, payment method…">
+      <div id="paymentsTableWrap">
+        <div class="state-msg">Loading payments…</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /container -->
+
+<script src="scripts/api.js"></script>
+<script src="scripts/seller.js"></script>
+<script src="scripts/auth.js"></script>
+<script src="scripts/seller-orders.js"></script>
 </body>
 </html>
