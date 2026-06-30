@@ -1,278 +1,236 @@
-// seller-orders.js — Orders & Payments tabs for Seller Dashboard
+const sellerForm = document.getElementById('sellerForm');
+const productsGrid = document.getElementById('sellerProducts');
+const productImageInput = document.getElementById('productImage');
+const productImagePreview = document.getElementById('productImagePreview');
+const logoutBtn = document.getElementById('logoutBtn');
+const formTitle = document.getElementById('form-title');
+const submitBtnEl = document.getElementById('submitBtn');
 
-const BASE = 'https://luxury-backend-qtck.onrender.com/api';
+let editingProductId = null; // null = create mode, otherwise = editing this product's id
 
-function getToken() {
-  return localStorage.getItem('authToken') || localStorage.getItem('token') || '';
+// 1. INITIALIZE
+document.addEventListener('DOMContentLoaded', loadSellerProducts);
+
+
+// 3. IMAGE PREVIEW
+if(productImageInput) {
+    productImageInput.addEventListener('change', () => {
+        const file = productImageInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                productImagePreview.src = e.target.result;
+                productImagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
-function authHeaders() {
-  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
+// 4. SUBMIT FORM (handles both Create and Update)
+if (sellerForm) {
+    sellerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const isEditing = !!editingProductId;
+
+        submitBtn.innerText = isEditing ? "Updating..." : "Processing...";
+        submitBtn.disabled = true;
+
+        const name = document.getElementById('productName').value;
+        const price = document.getElementById('productPrice').value;
+        const category = document.getElementById('productCategory').value;
+        const description = document.getElementById('productDescription').value;
+        const file = productImageInput.files[0];
+
+        // Convert Image to Base64 (only if a new file was chosen)
+        let imageBase64 = "";
+        if (file) {
+            try {
+                imageBase64 = await toBase64(file);
+            } catch(err) {
+                alert("Error reading file");
+                submitBtn.disabled = false;
+                return;
+            }
+        }
+
+        const productData = { name, price, category, description };
+        // Only include image if a new one was picked — avoids wiping the existing image on edit
+        if (imageBase64) productData.image = imageBase64;
+
+        try {
+            const url = isEditing
+                ? `https://luxury-backend-qtck.onrender.com/api/products/${editingProductId}`
+                : 'https://luxury-backend-qtck.onrender.com/api/products';
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(isEditing ? "✅ Product Updated!" : "✅ Product Saved!");
+                exitEditMode();
+                productImagePreview.style.display = 'none';
+                loadSellerProducts();
+            } else {
+                alert("❌ Error: " + result.message);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Server Connection Failed");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = editingProductId ? "Update Item" : "Publish Item";
+        }
+    });
 }
 
-// ── Tab switching ──────────────────────────────────────────────
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-
-    if (btn.dataset.tab === 'orders' && !window._ordersLoaded) loadAllOrders();
-    if (btn.dataset.tab === 'payments' && !window._paymentsLoaded) loadPayments();
-  });
+// Helper: Convert File to Base64
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
 });
 
-// ── Fetch all orders (admin endpoint) ─────────────────────────
-let allOrders = [];
+// ── EDIT MODE ──────────────────────────────────────────
+window.editProduct = function(id) {
+    const product = allSellerProducts.find(p => p.id === id);
+    if (!product) return;
 
-async function loadAllOrders() {
-  const wrap = document.getElementById('ordersTableWrap');
-  wrap.innerHTML = '<div class="state-msg">Loading orders…</div>';
+    editingProductId = id;
 
-  try {
-    const res = await fetch(`${BASE}/admin/orders`, { headers: authHeaders() });
-    const data = await res.json();
+    document.getElementById('productName').value = product.name || '';
+    document.getElementById('productPrice').value = product.price || '';
+    document.getElementById('productCategory').value = product.category || '';
+    document.getElementById('productDescription').value = product.description || '';
 
-    if (!data.success) throw new Error(data.message || 'Failed');
+    // Image stays as-is unless the seller picks a new file
+    productImageInput.value = '';
+    let img = product.image || (Array.isArray(product.images) && product.images[0]) || '';
+    if (img) {
+        productImagePreview.src = img;
+        productImagePreview.style.display = 'block';
+        document.getElementById('previewContainer').style.display = 'block';
+    }
 
-    allOrders = data.orders || [];
-    window._ordersLoaded = true;
-    renderOrderStats(allOrders);
-    renderOrdersTable(allOrders);
+    // File input is no longer required while editing (existing image is kept if untouched)
+    productImageInput.required = false;
 
-    // Live search
-    document.getElementById('orderSearch').addEventListener('input', function () {
-      const q = this.value.toLowerCase();
-      const filtered = allOrders.filter(o =>
-        (o.customer_name || '').toLowerCase().includes(q) ||
-        (o.customer_email || '').toLowerCase().includes(q) ||
-        String(o.order_number || o.orderNumber || o.id).includes(q)
-      );
-      renderOrdersTable(filtered);
-    });
+    if (formTitle) formTitle.textContent = '✏️ Edit Product';
+    if (submitBtnEl) submitBtnEl.innerText = 'Update Item';
 
-  } catch (err) {
-    console.error(err);
-    wrap.innerHTML = `<div class="state-msg" style="color:#ef4444;">❌ ${err.message}<br><small>Make sure you are logged in as Admin/Seller.</small></div>`;
-  }
-}
+    // Add a Cancel button if not already present
+    if (!document.getElementById('cancelEditBtn')) {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancelEditBtn';
+        cancelBtn.textContent = 'Cancel Edit';
+        cancelBtn.style.cssText = 'margin-left:8px;background:#9ca3af;color:white;border:none;padding:10px 16px;border-radius:4px;cursor:pointer;';
+        cancelBtn.addEventListener('click', exitEditMode);
+        submitBtnEl.parentNode.appendChild(cancelBtn);
+    }
 
-function renderOrderStats(orders) {
-  const pending   = orders.filter(o => o.status === 'pending').length;
-  const shipped   = orders.filter(o => o.status === 'shipped').length;
-  const delivered = orders.filter(o => o.status === 'delivered').length;
-  const revenue   = orders.reduce((s, o) => s + Number(o.total_amount || o.totalAmount || 0), 0);
-
-  document.getElementById('statTotal').textContent     = orders.length;
-  document.getElementById('statPending').textContent   = pending;
-  document.getElementById('statShipped').textContent   = shipped;
-  document.getElementById('statDelivered').textContent = delivered;
-  document.getElementById('statRevenue').textContent   = revenue.toLocaleString();
-}
-
-function renderOrdersTable(orders) {
-  const wrap = document.getElementById('ordersTableWrap');
-
-  if (!orders.length) {
-    wrap.innerHTML = '<div class="state-msg">No orders found.</div>';
-    return;
-  }
-
-  const rows = orders.map(o => {
-    const orderNum  = o.order_number || o.orderNumber || o.id;
-    const customer  = o.customer_name || o.name || '—';
-    const email     = o.customer_email || o.email || '—';
-    const phone     = o.customer_phone || o.phone || '—';
-    const total     = Number(o.total_amount || o.totalAmount || 0).toLocaleString();
-    const date      = o.created_at ? new Date(o.created_at).toLocaleDateString() : '—';
-    const status    = (o.status || 'pending').toLowerCase();
-    const badgeCls  = `badge badge-${status}`;
-
-    // Parse items
-    let items = [];
-    try { items = typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []); } catch(e) {}
-    const itemsHTML = items.map(i =>
-      `<div style="padding:3px 0;">• ${i.name || 'Item'} × ${i.quantity || 1} — KSh ${Number(i.price || 0).toLocaleString()}</div>`
-    ).join('') || '<div style="color:#9ca3af;">No item details</div>';
-
-    return `
-      <tr>
-        <td><strong>#${orderNum}</strong></td>
-        <td>
-          <div style="font-weight:600;">${customer}</div>
-          <div style="font-size:11px;color:#6b7280;">${email}</div>
-          <div style="font-size:11px;color:#6b7280;">${phone}</div>
-        </td>
-        <td>KSh ${total}</td>
-        <td><span class="${badgeCls}">${status}</span></td>
-        <td>
-          <select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)">
-            <option value="pending"   ${status==='pending'   ? 'selected':''}>Pending</option>
-            <option value="shipped"   ${status==='shipped'   ? 'selected':''}>Shipped</option>
-            <option value="delivered" ${status==='delivered' ? 'selected':''}>Delivered</option>
-            <option value="cancelled" ${status==='cancelled' ? 'selected':''}>Cancelled</option>
-          </select>
-        </td>
-        <td>${date}</td>
-        <td>
-          <button class="expand-btn" onclick="toggleItems(this)">🧾 Items</button>
-          <div class="order-items-detail">${itemsHTML}</div>
-        </td>
-      </tr>`;
-  }).join('');
-
-  wrap.innerHTML = `
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Order #</th>
-          <th>Customer</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Update Status</th>
-          <th>Date</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-window.toggleItems = function(btn) {
-  const detail = btn.nextElementSibling;
-  detail.classList.toggle('open');
-  btn.textContent = detail.classList.contains('open') ? '🔼 Hide' : '🧾 Items';
+    // Scroll the form into view so the seller sees what they're editing
+    sellerForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
-window.updateOrderStatus = async function(orderId, newStatus) {
-  try {
-    const res = await fetch(`${BASE}/admin/orders/${orderId}/status`, {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ status: newStatus })
-    });
-    const data = await res.json();
-    if (data.success) {
-      // Update local array and re-render stats
-      const order = allOrders.find(o => o.id === orderId);
-      if (order) order.status = newStatus;
-      renderOrderStats(allOrders);
-      showToast('✅ Status updated');
-    } else {
-      showToast('❌ ' + (data.message || 'Update failed'), true);
+function exitEditMode() {
+    editingProductId = null;
+    sellerForm.reset();
+    productImagePreview.style.display = 'none';
+    productImageInput.required = true;
+    if (formTitle) formTitle.textContent = '➕ Add New Product';
+    if (submitBtnEl) submitBtnEl.innerText = 'Publish Item';
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    if (cancelBtn) cancelBtn.remove();
+}
+
+// 5. LOAD PRODUCTS
+let allSellerProducts = []; // keep full list in memory for filtering + editing
+
+async function loadSellerProducts() {
+    if (!productsGrid) return;
+    productsGrid.innerHTML = '<p style="text-align:center">Loading inventory...</p>';
+
+    try {
+        const response = await fetch('https://luxury-backend-qtck.onrender.com/api/products');
+        const data = await response.json();
+
+        if (data.success && data.products) {
+            allSellerProducts = data.products;
+            applyCategoryFilter();
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        productsGrid.innerHTML = '<p style="color:red; text-align:center">Failed to load products. Is the server running?</p>';
     }
-  } catch (err) {
-    showToast('❌ Server error', true);
-  }
-};
+}
 
-// ── Payments tab ───────────────────────────────────────────────
-async function loadPayments() {
-  const wrap = document.getElementById('paymentsTableWrap');
-  wrap.innerHTML = '<div class="state-msg">Loading payments…</div>';
+function applyCategoryFilter() {
+    const filterEl = document.getElementById('categoryFilter');
+    const selected = filterEl ? filterEl.value : '';
 
-  try {
-    // Reuse admin/orders — payment info is on each order
-    let orders = allOrders;
-    if (!orders.length) {
-      const res = await fetch(`${BASE}/admin/orders`, { headers: authHeaders() });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Failed');
-      orders = data.orders || [];
+    const list = selected
+        ? allSellerProducts.filter(p => p.category === selected)
+        : allSellerProducts;
+
+    renderProductCards(list);
+}
+
+function renderProductCards(products) {
+    productsGrid.innerHTML = '';
+
+    if (products.length === 0) {
+        productsGrid.innerHTML = '<p style="text-align:center">No products found.</p>';
+        return;
     }
-    window._paymentsLoaded = true;
-    renderPaymentStats(orders);
-    renderPaymentsTable(orders);
 
-    document.getElementById('paySearch').addEventListener('input', function () {
-      const q = this.value.toLowerCase();
-      const filtered = orders.filter(o =>
-        (o.customer_name || '').toLowerCase().includes(q) ||
-        (o.customer_email || '').toLowerCase().includes(q) ||
-        String(o.order_number || o.id).includes(q) ||
-        (o.payment_method || '').toLowerCase().includes(q)
-      );
-      renderPaymentsTable(filtered);
+    products.forEach(p => {
+        let img = p.image || 'https://via.placeholder.com/150';
+        if (Array.isArray(p.images) && p.images.length > 0) {
+            img = p.images[0];
+        }
+
+        const card = document.createElement('div');
+        card.className = 'seller-product-card';
+        card.style.cssText = "display:flex; gap:15px; padding:10px; border:1px solid #eee; background:#fff; margin-bottom:10px; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);";
+
+        card.innerHTML = `
+            <img src="${img}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+            <div style="flex:1;">
+                <h4 style="margin:0 0 5px 0;">${p.name}</h4>
+                <p style="margin:0; font-size:13px; color:#666;">${p.category}</p>
+                <p style="margin:0; font-weight:bold; color:#D4AF37;">Ksh ${Number(p.price).toLocaleString()}</p>
+            </div>
+            <button onclick="editProduct(${p.id})" style="color:white; background:#3b82f6; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Edit</button>
+            <button onclick="deleteProduct(${p.id})" style="color:white; background:#ff4444; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Delete</button>
+        `;
+
+        productsGrid.appendChild(card);
     });
-
-  } catch (err) {
-    console.error(err);
-    wrap.innerHTML = `<div class="state-msg" style="color:#ef4444;">❌ ${err.message}</div>`;
-  }
 }
 
-function renderPaymentStats(orders) {
-  const paid   = orders.filter(o => o.payment_status === 'paid' || o.paymentStatus === 'paid');
-  const unpaid = orders.filter(o => o.payment_status !== 'paid' && o.paymentStatus !== 'paid');
-  const total  = paid.reduce((s, o) => s + Number(o.total_amount || o.totalAmount || 0), 0);
+// Wire up the dropdown + read ?category= from URL on first load
+document.addEventListener('DOMContentLoaded', () => {
+    const filterEl = document.getElementById('categoryFilter');
+    if (filterEl) {
+        const params = new URLSearchParams(window.location.search);
+        const urlCategory = params.get('category');
+        if (urlCategory && urlCategory !== 'all') filterEl.value = urlCategory;
+        filterEl.addEventListener('change', applyCategoryFilter);
+    }
+});
 
-  document.getElementById('payStatTotal').textContent  = total.toLocaleString();
-  document.getElementById('payStatPaid').textContent   = paid.length;
-  document.getElementById('payStatUnpaid').textContent = unpaid.length;
-}
-
-function renderPaymentsTable(orders) {
-  const wrap = document.getElementById('paymentsTableWrap');
-  if (!orders.length) {
-    wrap.innerHTML = '<div class="state-msg">No records found.</div>';
-    return;
-  }
-
-  const rows = orders.map(o => {
-    const orderNum  = o.order_number || o.orderNumber || o.id;
-    const customer  = o.customer_name || o.name || '—';
-    const email     = o.customer_email || o.email || '—';
-    const total     = Number(o.total_amount || o.totalAmount || 0).toLocaleString();
-    const date      = o.created_at ? new Date(o.created_at).toLocaleDateString() : '—';
-    const payStatus = o.payment_status || o.paymentStatus || 'unpaid';
-    const method    = o.payment_method || o.paymentMethod || 'M-Pesa';
-    const ref       = o.payment_reference || o.paymentReference || '—';
-    const badgeCls  = payStatus === 'paid' ? 'badge badge-paid' : 'badge badge-unpaid';
-
-    return `
-      <tr>
-        <td><strong>#${orderNum}</strong></td>
-        <td>
-          <div style="font-weight:600;">${customer}</div>
-          <div style="font-size:11px;color:#6b7280;">${email}</div>
-        </td>
-        <td>KSh ${total}</td>
-        <td>${method}</td>
-        <td><code style="font-size:11px;">${ref}</code></td>
-        <td><span class="${badgeCls}">${payStatus}</span></td>
-        <td>${date}</td>
-      </tr>`;
-  }).join('');
-
-  wrap.innerHTML = `
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Order #</th>
-          <th>Customer</th>
-          <th>Amount</th>
-          <th>Method</th>
-          <th>Reference</th>
-          <th>Payment Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-// ── Toast notification ─────────────────────────────────────────
-function showToast(msg, isError = false) {
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.style.cssText = `
-    position:fixed; bottom:24px; right:24px; z-index:9999;
-    background:${isError ? '#ef4444' : '#065f46'};
-    color:white; padding:10px 20px; border-radius:8px;
-    font-size:14px; font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.2);
-    animation: fadeIn 0.3s ease;
-  `;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+window.deleteProduct = async function(id) {
+    if (confirm("Delete?")) {
+        await fetch(`https://luxury-backend-qtck.onrender.com/api/products/${id}`, { method: 'DELETE' });
+        loadSellerProducts();
+    }
 }
